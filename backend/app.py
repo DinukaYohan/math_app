@@ -1,12 +1,19 @@
 # app.py — Flask API server
 
 from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from llm import generate, MODEL_NAME
-import sqlite3, os, uuid
-from flask_jwt_extended import JWTManager
 from auth import auth_bp
+import sqlite3, os, uuid
+
+
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "dev-secret-change-me"
+jwt = JWTManager(app)
+
+
+app.register_blueprint(auth_bp)
 
 
 # --- SQLite setup ---
