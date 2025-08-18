@@ -1,9 +1,16 @@
 # app.py — Flask API server
 
 from flask import Flask, request, jsonify
-from llm import generate  
+from flask_jwt_extended import JWTManager
+from llm import generate 
+from auth import auth_bp 
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "dev-secret-change-me"
+jwt = JWTManager(app)
+
+
+app.register_blueprint(auth_bp)
 
 @app.route("/")
 def home():
