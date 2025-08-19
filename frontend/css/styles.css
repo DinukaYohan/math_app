@@ -1,0 +1,70 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #032c3d;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 70px;
+    height: 100%;
+    background-color: #000000cc;
+    padding: 10px;
+    transition: width 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar.expanded {
+    width: 200px;
+}
+
+.logo-icon {
+    width: 40px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+#sidebar-expanded {
+    margin-top: 20px;
+}
+
+/* Show sidebar contents only when expanded */
+.sidebar:not(.expanded) #sidebar-expanded {
+    display: none !important;
+}
+
+/* Navbar (top-right dropdown) */
+.navbar {
+    z-index: 999;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    background-color: #013444;
+}
+
+.dropdown-menu a {
+    color: #fff;
+}
+
+.dropdown-menu a:hover {
+    background-color: #026179;
+}
+
+/* Output Box */
+#outputBox {
+    background-color: #f8f9fa;
+    color: #000;
+}
+
+/* Optional: Smooth transitions */
+.sidebar,
+#sidebar-expanded,
+.dropdown-menu {
+    transition: all 0.3s ease-in-out;
+}
