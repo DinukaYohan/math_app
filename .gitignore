@@ -1,3 +1,11 @@
 .venv
 .DS_Store
 __pycache__
+db
+*.db-wal
+*.db-shm
+# SQLite
+*.db
+*.db-wal
+*.db-shm
+backend/app.db
