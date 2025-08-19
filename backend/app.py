@@ -1,10 +1,12 @@
 # app.py — Flask API server
 
+
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from llm import generate, MODEL_NAME
 from auth import auth_bp
 import sqlite3, os, uuid
+from db import get_db
 
 
 
@@ -14,6 +16,12 @@ jwt = JWTManager(app)
 
 
 app.register_blueprint(auth_bp)
+
+
+from db import get_db, init_db, close_db
+app.teardown_appcontext(close_db)
+init_db()
+
 
 
 # --- SQLite setup ---
@@ -45,11 +53,12 @@ CREATE INDEX IF NOT EXISTS idx_qapairs_userid_created
 """)
 
 def save_qa(uid, q, a, model):
-    con.execute(
+    db = get_db()
+    db.execute(
         "INSERT INTO qa_pairs(qaid,user_id,question,answer,model) VALUES(?,?,?,?,?)",
         (str(uuid.uuid4()), uid, q, a, model)
     )
-    con.commit()
+    db.commit()
 
 
 @app.route("/")
@@ -57,49 +66,33 @@ def home():
     return "<h1> FLASK REST API </h1>"
 
 # POST /generate — bridges the HTTP request to Qwen3 via llm.generate()
+
 @app.route("/generate", methods=["POST"])
+@jwt_required()
 def generate_endpoint():
-    """
-    Request JSON:
-      - Either { "prompt": "..." }
-      - Or { "grade": "4", "topic": "fractions" } and we'll build a simple prompt.
-
-    Response JSON:
-      { "prompt": "...", "content": "..." }
-      (No thinking content is returned.)
-    """
-    data = request.get_json(silent=True) or {}
-
-    # Use provided prompt, or build a simple one from grade/topic
+    data = request.get_json(silent=True) or {}# accept mine when in conflict 
     if data.get("prompt"):
         prompt = str(data["prompt"])
     else:
         grade = str(data.get("grade", "4"))
         topic = str(data.get("topic", "arithmetic"))
-        prompt = (
-            f"Create ONE short, correct, elementary-level math word problem "
-            f"for grade {grade} on {topic}. Keep it clear and age-appropriate."
-        )
-
+        prompt = (f"Create ONE short, correct, elementary-level math word problem "
+                  f"for grade {grade} on {topic}. Keep it clear and age-appropriate.")
     try:
-        # llm.generate() should already strip any <think> content and return only the visible answer.
+        uid = int(get_jwt_identity())             # <-- use JWT user id
         content = generate(prompt, max_new_tokens=256)
-
-        save_qa("demo-user", prompt, content, MODEL_NAME)   # TODO: replace with real uid after auth
-
-        return jsonify({
-            "prompt": prompt,
-            "content": content  
-        }), 200
-
+        save_qa(uid, prompt, content, MODEL_NAME) # <-- pass INT uid
+        return jsonify({"prompt": prompt, "content": content}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
     
 
     # ADDED: GET /history — list recent Q&A for the current user
 @app.get("/history")
+@jwt_required()
 def history():
-    uid = "demo-user"  # TODO: read from session/JWT
+    uid = int(get_jwt_identity())  # TODO: read from session/JWT--Accepts benuls 
     limit  = int(request.args.get("limit", 20))
     offset = int(request.args.get("offset", 0))
     rows = con.execute("""
@@ -112,5 +105,5 @@ def history():
 
 
 if __name__ == "__main__":
+   app.run(host="127.0.0.1", port=8080, debug=True)
    
-    app.run(debug=True)

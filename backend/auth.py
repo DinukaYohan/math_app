@@ -45,7 +45,7 @@ def login():
     if not check_password_hash(pwd_hash, password):
         return jsonify({"error": "invalid credentials"}), 401
 
-    token = create_access_token(identity=uid)
+    token = create_access_token(identity=str(uid))
     return jsonify({"access_token": token, "username": username})
 
 #The /me route lets the logged in user to fetch their own profile using the token they got at login.
