@@ -1,6 +1,8 @@
 # db.py — SQLite helpers + schema used by auth.py and app.py
 import os, sqlite3
+from typing import Iterable, Optional
 from flask import g
+import uuid
 
 # DB file lives next to this module
 DB_PATH = os.path.join(os.path.dirname(__file__), "app.db")
@@ -85,3 +87,55 @@ def get_user_by_id(uid):
         "SELECT id, email, username, password_hash, created_at FROM users WHERE id=?",
         (uid,)
     ).fetchone()
+
+#Helper functions used by /generate
+
+def save_qa(user_id:int, question: str, answer: str, model: str) -> str:
+    #saves the generated questions and answers for a user and returns the creaded UUID string
+    qaid = str(uuid.uuid4())
+    db = get_db()
+    db.execute(
+        "INSERT INTO qa_pairs (qaid, user_id, question, answer, model) VALUES (?,?,?,?,?)",
+        (qaid, user_id, question, answer, model),
+    )
+    db.commit()
+    return qaid
+
+
+def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0) -> Iterable[sqlite3.Row]:
+    #List recent questions and answers for a user with pagination.
+    return get_db().execute(
+        """
+        SELECT qaid, question, answer, model, created_at
+        FROM qa_pairs
+        WHERE user_id=?
+        ORDER BY datetime(created_at) DESC
+        LIMIT ? OFFSET ?
+        """,
+        (user_id, limit, offset),
+    ).fetchall()
+
+def get_qa(qaid: str, user_id: int) -> Optional[sqlite3.Row]:
+    #Fetch a single questions and answers item by its id, scoped to the owner.
+    return (
+        get_db()
+        .execute(
+            """
+            SELECT qaid, user_id, question, answer, model, created_at
+            FROM qa_pairs
+            WHERE qaid=? AND user_id=?
+            """,
+            (qaid, user_id),
+        )
+        .fetchone()
+    )
+
+def delete_qa(qaid: str, user_id: int) -> int:
+    #Delete a questions and answers item by id, scoped to the owner. Returns number of rows deleted (0 or 1).
+    db = get_db()
+    cur = db.execute(
+        "DELETE FROM qa_pairs WHERE qaid=? AND user_id=?",
+        (qaid, user_id),
+    )
+    db.commit()
+    return cur.rowcount
