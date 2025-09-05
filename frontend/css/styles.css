@@ -1,70 +1,50 @@
+/* Base */
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #032c3d;
-    color: #fff;
-    margin: 0;
-    padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #032c3d;
+  color: #fff;
+  margin: 0;
 }
 
-/* Sidebar */
+/* Left sidebar */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 70px;
-    height: 100%;
-    background-color: #000000cc;
-    padding: 10px;
-    transition: width 0.3s ease;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #000000cc;
+  padding: 10px;
+  transition: width 0.25s ease;
+  z-index: 1000;
+  width: 80px;         /* collapsed width */
+  overflow: hidden;
 }
-
 .sidebar.expanded {
-    width: 200px;
+  width: 220px;        /* expanded width */
 }
-
 .logo-icon {
-    width: 40px;
-    cursor: pointer;
-    margin-bottom: 20px;
+  width: 40px;
+  cursor: pointer;
+  margin-bottom: 20px;
 }
 
-#sidebar-expanded {
-    margin-top: 20px;
-}
-
-/* Show sidebar contents only when expanded */
+/* hide contents when collapsed */
 .sidebar:not(.expanded) #sidebar-expanded {
-    display: none !important;
+  display: none !important;
 }
 
-/* Navbar (top-right dropdown) */
-.navbar {
-    z-index: 999;
+/* Push main content to the right of the sidebar */
+.main-wrap {
+  transition: margin-left 0.25s ease;
+  margin-left: 220px;  /* default to expanded */
+  padding: 20px;
 }
 
-/* Dropdown menu styling */
-.dropdown-menu {
-    background-color: #013444;
-}
+/* Top-right dropdown */
+.navbar { z-index: 999; }
+.dropdown-menu { background-color: #013444; }
+.dropdown-menu a { color: #fff; }
+.dropdown-menu a:hover { background-color: #026179; }
 
-.dropdown-menu a {
-    color: #fff;
-}
-
-.dropdown-menu a:hover {
-    background-color: #026179;
-}
-
-/* Output Box */
-#outputBox {
-    background-color: #f8f9fa;
-    color: #000;
-}
-
-/* Optional: Smooth transitions */
-.sidebar,
-#sidebar-expanded,
-.dropdown-menu {
-    transition: all 0.3s ease-in-out;
-}
+/* Output box */
+#outputBox { background-color: #f8f9fa; color: #000; }
