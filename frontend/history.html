@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chat History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-dark text-light">
+
+  <div class="container mt-5">
+    <h1 class="mb-4 text-center">Chat History</h1>
+
+    <!-- History list -->
+    <ul id="historyList" class="list-group mb-4">
+      <!-- Example entry -->
+      <!-- <li class="list-group-item">Generated Question 1</li> -->
+    </ul>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-between">
+      <a href="index.html" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back
+      </a>
+      <button id="clearHistoryBtn" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Clear History
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Load history from localStorage
+    function loadHistory() {
+      const historyList = document.getElementById("historyList");
+      const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+
+      historyList.innerHTML = "";
+      if (history.length === 0) {
+        historyList.innerHTML = `<li class="list-group-item text-muted">No history found</li>`;
+        return;
+      }
+
+      history.forEach((item, index) => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        li.textContent = `${index + 1}. ${item}`;
+        historyList.appendChild(li);
+      });
+    }
+
+    // Clear history
+    document.getElementById("clearHistoryBtn").addEventListener("click", () => {
+      localStorage.removeItem("chatHistory");
+      loadHistory();
+    });
+
+    // Run when page loads
+    loadHistory();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
