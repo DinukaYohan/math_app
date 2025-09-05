@@ -1,4 +1,5 @@
 # db.py — SQLite helpers + schema used by auth.py and app.py
+import json
 import os, sqlite3
 from typing import Iterable, Optional
 from flask import g
@@ -47,6 +48,7 @@ def init_db():
       question TEXT NOT NULL,
       answer   TEXT NOT NULL,
       model    TEXT,
+      meta_json TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     );
@@ -90,23 +92,22 @@ def get_user_by_id(uid):
 
 #Helper functions used by /generate
 
-def save_qa(user_id:int, question: str, answer: str, model: str) -> str:
-    #saves the generated questions and answers for a user and returns the creaded UUID string
+def save_qa(user_id: int, question: str, answer: str, model: str, meta: dict | None = None) -> str:
     qaid = str(uuid.uuid4())
     db = get_db()
     db.execute(
-        "INSERT INTO qa_pairs (qaid, user_id, question, answer, model) VALUES (?,?,?,?,?)",
-        (qaid, user_id, question, answer, model),
+        "INSERT INTO qa_pairs (qaid, user_id, question, answer, model, meta_json) VALUES (?,?,?,?,?,?)",
+        (qaid, user_id, question, answer, model, json.dumps(meta or {})),
     )
     db.commit()
     return qaid
 
 
-def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0) -> Iterable[sqlite3.Row]:
-    #List recent questions and answers for a user with pagination.
+
+def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0):
     return get_db().execute(
         """
-        SELECT qaid, question, answer, model, created_at
+        SELECT qaid, question, answer, model, meta_json, created_at
         FROM qa_pairs
         WHERE user_id=?
         ORDER BY datetime(created_at) DESC
@@ -114,6 +115,7 @@ def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0) -> Iterable
         """,
         (user_id, limit, offset),
     ).fetchall()
+
 
 def get_qa(qaid: str, user_id: int) -> Optional[sqlite3.Row]:
     #Fetch a single questions and answers item by its id, scoped to the owner.
