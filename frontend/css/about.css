@@ -1,0 +1,72 @@
+/* about.css */
+
+/* Global reset */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #032c3d; /* same theme as index */
+  color: #fff;
+  line-height: 1.6;
+}
+
+/* Container */
+.about-container {
+  max-width: 900px;
+  margin: 80px auto;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Heading */
+.about-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: #00d9ff;
+  text-align: center;
+}
+
+/* Subheading */
+.about-container h2 {
+  font-size: 1.5rem;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #ffcc00;
+}
+
+/* Paragraphs */
+.about-container p {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #e6e6e6;
+  text-align: justify;
+}
+
+/* Highlight box */
+.highlight-box {
+  margin: 20px 0;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #00d9ff;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+/* Footer link */
+.about-footer {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.9rem;
+}
+
+.about-footer a {
+  color: #00d9ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.about-footer a:hover {
+  text-decoration: underline;
+}
