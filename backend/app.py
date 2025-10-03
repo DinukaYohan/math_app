@@ -10,6 +10,7 @@ from db import init_db, close_db
 from db import save_qa
 from db import list_qa_for_user
 from llm_router import generate as routed_generate
+from flask_cors import CORS
 
 
 app = Flask(__name__)
@@ -23,6 +24,7 @@ app.register_blueprint(auth_bp)
 app.teardown_appcontext(close_db)
 init_db()
 
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/")
 def home():
