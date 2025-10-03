@@ -21,7 +21,7 @@ function newChat() {
 
   if (onIndex) {
     const prompt = document.getElementById("promptInput");
-    if (prompt) prompt.value = "";
+    if (prompt) prompt.value = ""; 
 
     // Reset selects/inputs if they exist
     ["country", "language", "grade", "model"].forEach((id) => {
