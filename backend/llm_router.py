@@ -1,7 +1,7 @@
 # llm_router.py — simple model router
 
 from typing import Optional
-from llm import generate as qwen_generate 
+from llm_qwen import generate as qwen_generate 
 
 try:
     from llm_openai import generate as openai_generate

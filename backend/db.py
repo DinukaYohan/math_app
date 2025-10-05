@@ -28,7 +28,7 @@ def get_db():
     return g.db
 
 def close_db(_exc=None):
-       # close at request teardown
+     # close at request teardown
     db = g.pop("db", None)
     if db: db.close()
 
