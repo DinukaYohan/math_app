@@ -3,6 +3,10 @@
 
 import json
 import os
+
+
+from llm_router import generate as route_generate
+
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
@@ -34,7 +38,7 @@ def home():
     return "<h1> FLASK REST API </h1>"
 
 #Explicit list of supported model keys as I removed the config.py
-MODELS = ["qwen", "gemini"]
+MODELS = ["qwen", "gemini", "openai" ]
 
 #For the frontend to call the dropdowns
 @app.get("/options/bootstrap")
@@ -211,3 +215,13 @@ except Exception as e:
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8080, debug=True)
    
+
+@app.post("/api/chat")
+def api_chat():
+    data = request.get_json(force=True, silent=True) or {}
+    try:
+        reply = route_generate(data.get("message",""), data.get("model","openai"))
+        return jsonify({"reply": reply}), 200
+    except Exception as e:
+        print("LLM error:", e)
+        return jsonify({"error": str(e)}), 500

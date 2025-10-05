@@ -9,3 +9,4 @@ db
 *.db-wal
 *.db-shm
 backend/app.db
+backend/.env
