@@ -58,56 +58,43 @@
     <div class="container text-center mt-5">
       <h1>Generate Math Questions</h1>
 
-      <!-- Filters only (no free-text prompt) -->
+      <!-- Filters -->
       <div class="row g-3 mb-3 text-start mt-3">
         <div class="col-md-3">
           <label class="form-label">Country</label>
-          <select id="country" class="form-select">
-            <option value="">-- Select Country --</option>
-            <option value="Sri Lanka">Sri Lanka</option>
-            <option value="India">India</option>
-            <option value="Albania">Albania</option>
-          </select>
+          <select id="country" class="form-select"></select>
         </div>
 
         <div class="col-md-3">
           <label class="form-label">Language</label>
-          <select id="language" class="form-select">
-            <option>English</option>
-            <option>Sinhala</option>
-            <option>Tamil</option>
-            <option>Hindi</option>
-            <option>Albanian</option>
+          <select id="language" class="form-select" disabled>
           </select>
         </div>
 
         <div class="col-md-3">
           <label class="form-label">Grade</label>
           <select id="grade" class="form-select">
-            <option>1</option><option>2</option><option>3</option>
-            <option>4</option><option>5</option><option>6</option>
           </select>
         </div>
 
         <div class="col-md-3">
           <label class="form-label">Model</label>
           <select id="model" class="form-select">
-            <option>Qwen</option>
-            <option>Gemini</option>
-            <option>Chat GPT</option>
           </select>
         </div>
 
         <div class="col-md-3">
           <label class="form-label">Topic</label>
           <select id="topic" class="form-select">
-            <option value="addition">Addition</option>
-            <option value="subtraction">Subtraction</option>
-            <option value="multiplication">Multiplication</option>
-            <option value="division">Division</option>
-            <option value="fractions">Fractions</option>
           </select>
         </div>
+
+        <div class="col-md-9">
+          <label class="form-label">Learning Objective</label>
+          <select id="learningObjective" class="form-select" disabled></select>
+          <div id="loHelp" class="form-text text-warning d-none">No learning objectives for this selection. Try a different topic.</div>
+        </div>
+
       </div>
 
       <!-- Generate button -->
