@@ -1,10 +1,18 @@
 # llm_router.py — simple model router
 
 from typing import Optional
-from llm import generate as qwen_generate 
+from llm_qwen import generate as qwen_generate 
+
+try:
+    from llm_openai import generate as openai_generate
+except Exception:
+    def openai_generate(prompt: str, max_new_tokens: int = 256) -> str:
+        return "OpenAI backend not configured."
 
 def generate(prompt: str, model_key: Optional[str], max_new_tokens: int = 256) -> str:
     mk = (model_key or "qwen").lower()
+    if mk in ("openai", "gpt", "chatgpt"):
+        return openai_generate(prompt, max_new_tokens=max_new_tokens)
     if mk == "qwen":
         return qwen_generate(prompt, max_new_tokens=max_new_tokens)
     elif mk == "gemini":
@@ -13,3 +21,5 @@ def generate(prompt: str, model_key: Optional[str], max_new_tokens: int = 256) -
         return gemini_generate(prompt, max_new_tokens=max_new_tokens)
     else:
         raise ValueError(f"Unknown model '{model_key}'. Use one of: qwen, gemini.")
+
+

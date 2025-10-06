@@ -4,6 +4,7 @@ import os, sqlite3
 from typing import Iterable, Optional
 from flask import g
 import uuid
+from openpyxl import load_workbook
 
 # DB file lives next to this module
 DB_PATH = os.path.join(os.path.dirname(__file__), "app.db")
@@ -27,12 +28,13 @@ def get_db():
     return g.db
 
 def close_db(_exc=None):
-       # close at request teardown
+     # close at request teardown
     db = g.pop("db", None)
     if db: db.close()
 
 def init_db():
      # create tables/indexes if missing
+     # created a table learning_objectives for the data collected from the excel sheet
     db = _connect()
     db.executescript("""
     CREATE TABLE IF NOT EXISTS users(
@@ -50,10 +52,26 @@ def init_db():
       model    TEXT,
       meta_json TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      review_score INTEGER,
+      review_text  TEXT,
+      review_at    TEXT,
       FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS idx_qa_user_created
       ON qa_pairs(user_id, created_at DESC);
+    CREATE TABLE IF NOT EXISTS learning_objectives (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      country TEXT NOT NULL,
+      grade   TEXT NOT NULL,
+      language TEXT NOT NULL,
+      topic    TEXT NOT NULL,
+      objective TEXT NOT NULL,
+      UNIQUE(country, grade, language, topic, objective)
+    );
+    CREATE INDEX IF NOT EXISTS idx_lo_cgl 
+      ON learning_objectives(country, grade, language);
+    CREATE INDEX IF NOT EXISTS idx_lo_cglt 
+      ON learning_objectives(country, grade, language, topic);
     """)
     db.commit()
     db.close()
@@ -107,7 +125,8 @@ def save_qa(user_id: int, question: str, answer: str, model: str, meta: dict | N
 def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0):
     return get_db().execute(
         """
-        SELECT qaid, question, answer, model, meta_json, created_at
+        SELECT qaid, question, answer, model, meta_json, created_at,
+               review_score, review_text, review_at
         FROM qa_pairs
         WHERE user_id=?
         ORDER BY datetime(created_at) DESC
@@ -115,7 +134,6 @@ def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0):
         """,
         (user_id, limit, offset),
     ).fetchall()
-
 
 def get_qa(qaid: str, user_id: int) -> Optional[sqlite3.Row]:
     #Fetch a single questions and answers item by its id, scoped to the owner.
@@ -141,3 +159,155 @@ def delete_qa(qaid: str, user_id: int) -> int:
     )
     db.commit()
     return cur.rowcount
+
+# --------- Data from the excel file importer and utilities ----------
+
+#cleans up text values from excel so they’re safe and consistent.
+def _canon(s: str) -> str:
+    """Trim/normalize a cell value into a safe string."""
+    return (s or "").strip()
+
+#Reads the excel file, cleans each row and saves all learning objectives to the database 
+def import_learning_objectives_xlsx(xlsx_path: str) -> int:
+    """
+    Load/refresh learning objectives from an Excel file into SQLite.
+    This is idempotent: duplicates are ignored via UNIQUE constraint.
+    Returns the number of rows processed (attempted).
+    Expected columns (case-insensitive):
+      Country | Grade | Language | Topic | Learning Objective
+    """
+    if not os.path.exists(xlsx_path):
+        raise FileNotFoundError(f"LO spreadsheet not found: {xlsx_path}")
+
+    wb = load_workbook(filename=xlsx_path, read_only=True, data_only=True)
+    ws = wb.active
+
+    # Read header row
+    header_cells = next(ws.iter_rows(min_row=1, max_row=1))
+    headers = [(_canon(c.value)).lower() for c in header_cells]
+
+    required = ["country", "grade", "language", "topic", "learning objective"]
+    missing = [h for h in required if h not in headers]
+    if missing:
+        raise RuntimeError(
+            f"Spreadsheet missing required columns: {', '.join(missing)}. "
+            "Expected columns: Country, Grade, Language, Topic, Learning Objective"
+        )
+
+    i_country = headers.index("country")
+    i_grade   = headers.index("grade")
+    i_lang    = headers.index("language")
+    i_topic   = headers.index("topic")
+    i_obj     = headers.index("learning objective")
+
+    db = get_db()
+    n = 0
+    for row in ws.iter_rows(min_row=2):
+        country = _canon(row[i_country].value)
+        grade   = _canon(str(row[i_grade].value))
+        lang    = _canon(row[i_lang].value)
+        topic   = _canon(row[i_topic].value)
+        obj     = _canon(row[i_obj].value)
+
+        # Skip incomplete rows
+        if not (country and grade and lang and topic and obj):
+            continue
+
+        # Insert or ignore duplicates
+        db.execute(
+            """INSERT OR IGNORE INTO learning_objectives
+               (country, grade, language, topic, objective)
+               VALUES (?,?,?,?,?)""",
+            (country, grade, lang, topic, obj),
+        )
+        n += 1
+
+    db.commit()
+    return n
+
+#Asks the datavase for all different countries that exists
+def list_distinct_countries():
+    return [r[0] for r in get_db().execute(
+        "SELECT DISTINCT country FROM learning_objectives ORDER BY country COLLATE NOCASE"
+    ).fetchall()]
+
+# Asks the database for all languages filtered by a specific country and grade
+def list_distinct_languages(country=None, grade=None):
+    q  = "SELECT DISTINCT language FROM learning_objectives WHERE 1=1"
+    ps = []
+    if country:
+        q += " AND country=?"; ps.append(country)
+    if grade:
+        q += " AND grade=?";   ps.append(grade)
+    q += " ORDER BY language COLLATE NOCASE"
+    return [r[0] for r in get_db().execute(q, ps).fetchall()]
+
+# Asks the database for all grades filtered by a specfic language and country
+def list_distinct_grades(country=None, language=None):
+    q  = "SELECT DISTINCT grade FROM learning_objectives WHERE 1=1"
+    ps = []
+    if country:
+        q += " AND country=?";  ps.append(country)
+    if language:
+        q += " AND language=?"; ps.append(language)
+    q += " ORDER BY CAST(grade AS INTEGER)"
+    return [r[0] for r in get_db().execute(q, ps).fetchall()]
+
+# Asks the database for all topics based on the country, grade and language
+def list_topics(country, grade, language):
+    return [r[0] for r in get_db().execute(
+        """SELECT DISTINCT topic FROM learning_objectives
+           WHERE country=? AND grade=? AND language=?
+           ORDER BY topic COLLATE NOCASE""",
+        (country, grade, language)
+    ).fetchall()]
+
+# Looks for all learning objectives in the database that match the selection of  country, grade, language and topic
+def list_objectives(country, grade, language, topic):
+    return [r[0] for r in get_db().execute(
+        """SELECT objective FROM learning_objectives
+           WHERE country=? AND grade=? AND language=? AND topic=?
+           ORDER BY objective COLLATE NOCASE""",
+        (country, grade, language, topic)
+    ).fetchall()]
+
+# Checks if the specific combination of the selected options actually exists
+def combo_is_valid(country, grade, language, topic, objective=None) -> bool:
+    if objective:
+        row = get_db().execute(
+            """SELECT 1 FROM learning_objectives
+               WHERE country=? AND grade=? AND language=? AND topic=? AND objective=?
+               LIMIT 1""",
+            (country, grade, language, topic, objective)
+        ).fetchone()
+    else:
+        row = get_db().execute(
+            """SELECT 1 FROM learning_objectives
+               WHERE country=? AND grade=? AND language=? AND topic=?
+               LIMIT 1""",
+            (country, grade, language, topic)
+        ).fetchone()
+    return bool(row)
+
+def set_review(user_id: int, qaid: str, score: int | None, text: str | None):
+    import datetime
+    db = get_db()
+    row = db.execute(
+        "SELECT 1 FROM qa_pairs WHERE qaid=? AND user_id=?",
+        (qaid, user_id)
+    ).fetchone()
+    if not row:
+        raise PermissionError("qa not found or not owned by user")
+
+    if score is None and (not text or not text.strip()):
+        db.execute(
+            "UPDATE qa_pairs SET review_score=NULL, review_text=NULL, review_at=NULL WHERE qaid=? AND user_id=?",
+            (qaid, user_id)
+        )
+    else:
+        ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.execute(
+            "UPDATE qa_pairs SET review_score=?, review_text=?, review_at=? WHERE qaid=? AND user_id=?",
+            (score, (text or "").strip(), ts, qaid, user_id)
+        )
+    db.commit()
