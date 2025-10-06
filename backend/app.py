@@ -145,7 +145,9 @@ def generate_endpoint():
         country = language = grade = topic = lo = ""
 
     try:
-        content = route_generate(prompt, model_key=model, max_new_tokens=256)
+        # Give models enough headroom to respond succinctly across languages.
+        # Gemini in particular can hit MAX_TOKENS with 256.
+        content = route_generate(prompt, model_key=model, max_new_tokens=768)
 
         # Persist to history with meta so the UI can show the selections
         meta = {
