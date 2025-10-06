@@ -44,10 +44,22 @@ def _configure(genai, api_key: Optional[str]):
 
 def _build_model(genai, max_new_tokens: int):
     model_id = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    # Ensure a sane floor for output tokens: Gemini can occasionally emit
+    # empty candidates when the cap is too low. Allow env override.
+    floor = 512
+    env_override = os.getenv("GEMINI_MAX_OUTPUT_TOKENS")
+    try:
+        if env_override:
+            floor = max(floor, int(env_override))
+    except Exception:
+        pass
+
+    max_tokens = int(max(max_new_tokens or 0, floor))
+
     return genai.GenerativeModel(
         model_id,
         generation_config={
-            "max_output_tokens": int(max_new_tokens or 512),
+            "max_output_tokens": max_tokens,
             "temperature": float(os.getenv("GEMINI_TEMPERATURE", "0.7")),
             # Ensure responses are returned as plain text parts
             "response_mime_type": "text/plain",
@@ -56,14 +68,34 @@ def _build_model(genai, max_new_tokens: int):
 
 
 def _candidate_text(resp) -> Optional[str]:
-    """Extract the first non-empty text part from the response candidates."""
+    """Extract the first non-empty text from the response.
+
+    Be tolerant of SDK variations where parts may be objects, dicts, or raw strings.
+    """
+    # Fast path: some SDKs expose a convenience accessor
+    try:
+        txt = getattr(resp, "text", None)
+        if isinstance(txt, str) and txt.strip():
+            return txt.strip()
+    except Exception:
+        pass
+
     cands = getattr(resp, "candidates", None) or []
     for cand in cands:
         parts = getattr(getattr(cand, "content", None), "parts", None) or []
         for part in parts:
+            # Object-style (TextPart.text)
             text = getattr(part, "text", None)
             if isinstance(text, str) and text.strip():
                 return text.strip()
+            # Dict-style ({"text": ...})
+            if isinstance(part, dict):
+                t = part.get("text")
+                if isinstance(t, str) and t.strip():
+                    return t.strip()
+            # Raw string part
+            if isinstance(part, str) and part.strip():
+                return part.strip()
     return None
 
 
@@ -147,13 +179,29 @@ def generate(prompt: str, max_new_tokens: int = 512, *, api_key: Optional[str] =
     if content:
         return content
 
-    # As a secondary attempt, use the SDK convenience accessor but guard errors.
-    try:
-        text = getattr(resp, "text", None)
-    except Exception:
-        text = None
-    if isinstance(text, str) and text.strip():
-        return text.strip()
+    # No usable text: inspect finish reason and attempt one targeted retry
+    reason = _format_finish_reason(resp)
+
+    if "MAX_TOKENS" in reason:
+        try:
+            bigger = max(int(max_new_tokens) * 2, 1024)
+        except Exception:
+            bigger = 1024
+        try:
+            model2 = _build_model(genai, bigger)
+            resp2 = model2.generate_content(prompt)
+            content2 = _candidate_text(resp2)
+            if content2:
+                return content2
+            # If still empty, annotate truncation for the caller instead of 500s
+            reason2 = _format_finish_reason(resp2)
+            return f"[Gemini] Output truncated (token limit). Details: {reason2}."
+        except Exception:
+            # Fall back to explanatory text
+            return f"[Gemini] Output truncated (token limit). Details: {reason}."
+
+    # Safety or other non-text outcomes: return explanatory text instead of raising
+    return f"[Gemini] No content returned. Details: {reason}."
 
     # No usable text; expose finish reason and safety info to help callers debug.
     reason = _format_finish_reason(resp)

@@ -73,6 +73,20 @@ def init_db():
     CREATE INDEX IF NOT EXISTS idx_lo_cglt 
       ON learning_objectives(country, grade, language, topic);
     """)
+    # Backfill columns that might be missing if the DB was created before
+    # review fields were introduced. CREATE TABLE IF NOT EXISTS will not
+    # add columns on existing tables, so we ALTER TABLE defensively.
+    try:
+        cols = [r[1] for r in db.execute("PRAGMA table_info(qa_pairs)").fetchall()]
+        if "review_score" not in cols:
+            db.execute("ALTER TABLE qa_pairs ADD COLUMN review_score INTEGER")
+        if "review_text" not in cols:
+            db.execute("ALTER TABLE qa_pairs ADD COLUMN review_text TEXT")
+        if "review_at" not in cols:
+            db.execute("ALTER TABLE qa_pairs ADD COLUMN review_at TEXT")
+    except Exception:
+        # In case the table doesn't exist yet the CREATE above will handle it.
+        pass
     db.commit()
     db.close()
 
