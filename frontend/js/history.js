@@ -45,11 +45,19 @@ async function loadHistory() {
         metaHtml += `<div class="mt-1"><strong>Aligned LO:</strong> ${esc(meta.learning_objective)}</div>`;
       }
 
+      let reviewHtml = "";
+      if (typeof item.review_score !== "undefined" || typeof item.review_text !== "undefined") {
+      const icon = item.review_score === 1 ? "👍" : item.review_score === -1 ? "👎" : "";
+      if (icon) reviewHtml += `<div class="mt-1"><strong>Review:</strong> ${icon}</div>`;
+      if (item.review_text) reviewHtml += `<div class="mt-1"><em>${esc(item.review_text)}</em></div>`;
+      }
+      
       li.innerHTML = `
         <strong>Q${idx + 1}:</strong> ${esc(item.question)}<br/>
         <em>Ans:</em> ${esc(item.answer)}<br/>
         <small class="text-muted">Model: ${esc(item.model)} • ${esc(item.created_at)}</small>
         ${metaHtml}
+        ${reviewHtml}
       `;
       list.appendChild(li);
     });
