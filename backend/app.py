@@ -6,11 +6,9 @@ import os
 
 
 from llm_router import generate as route_generate
-
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_cors import CORS
-
 from auth import auth_bp
 from db import (
     init_db, close_db,
@@ -18,8 +16,8 @@ from db import (
     import_learning_objectives_xlsx,
     list_distinct_countries, list_distinct_languages, list_distinct_grades,
     list_topics, list_objectives, combo_is_valid,
+    set_review, 
 )
-from llm_router import generate as routed_generate
 
 
 app = Flask(__name__)
@@ -147,7 +145,7 @@ def generate_endpoint():
         country = language = grade = topic = lo = ""
 
     try:
-        content = routed_generate(prompt, model_key=model, max_new_tokens=256)
+        content = route_generate(prompt, model_key=model, max_new_tokens=256)
 
         # Persist to history with meta so the UI can show the selections
         meta = {
@@ -157,9 +155,10 @@ def generate_endpoint():
             "topic": topic,
             "learning_objective": lo,
         }
-        save_qa(uid, prompt, content, model, meta=meta)
+        qaid = save_qa(uid, prompt, content, model, meta=meta)
 
         return jsonify({
+            "qaid": qaid,
             "prompt": prompt,
             "content": content,
             "model_used": model,
@@ -211,11 +210,6 @@ try:
 except Exception as e:
     print("ERROR importing LOs on startup:", e)
 
-
-if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8080, debug=True)
-   
-
 @app.post("/api/chat")
 def api_chat():
     data = request.get_json(force=True, silent=True) or {}
@@ -225,3 +219,29 @@ def api_chat():
     except Exception as e:
         print("LLM error:", e)
         return jsonify({"error": str(e)}), 500
+    
+@app.post("/qa/<qaid>/review")
+@jwt_required()
+def review_endpoint(qaid):
+    uid = int(get_jwt_identity())
+    data = request.get_json(silent=True) or {}
+
+    score_raw = (data.get("score") or "").strip().lower()  # "up" | "down" | "" (clear)
+    text = (data.get("text") or "").strip()
+
+    if score_raw not in ("", "up", "down"):
+        return jsonify({"error": "score must be 'up', 'down', or empty to clear"}), 400
+
+    score = 1 if score_raw == "up" else (-1 if score_raw == "down" else None)
+
+    try:
+        set_review(uid, qaid, score, text if (text or score is not None) else None)
+    except PermissionError:
+        return jsonify({"error": "not found"}), 404
+
+    return jsonify({"qaid": qaid, "review": {"score": score, "text": text}}), 200
+
+
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=8080, debug=False)

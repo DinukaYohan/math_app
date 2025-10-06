@@ -52,6 +52,9 @@ def init_db():
       model    TEXT,
       meta_json TEXT,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      review_score INTEGER,
+      review_text  TEXT,
+      review_at    TEXT,
       FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
     );
     CREATE INDEX IF NOT EXISTS idx_qa_user_created
@@ -122,7 +125,8 @@ def save_qa(user_id: int, question: str, answer: str, model: str, meta: dict | N
 def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0):
     return get_db().execute(
         """
-        SELECT qaid, question, answer, model, meta_json, created_at
+        SELECT qaid, question, answer, model, meta_json, created_at,
+               review_score, review_text, review_at
         FROM qa_pairs
         WHERE user_id=?
         ORDER BY datetime(created_at) DESC
@@ -130,7 +134,6 @@ def list_qa_for_user(user_id: int, limit: int = 20, offset: int = 0):
         """,
         (user_id, limit, offset),
     ).fetchall()
-
 
 def get_qa(qaid: str, user_id: int) -> Optional[sqlite3.Row]:
     #Fetch a single questions and answers item by its id, scoped to the owner.
@@ -285,3 +288,26 @@ def combo_is_valid(country, grade, language, topic, objective=None) -> bool:
             (country, grade, language, topic)
         ).fetchone()
     return bool(row)
+
+def set_review(user_id: int, qaid: str, score: int | None, text: str | None):
+    import datetime
+    db = get_db()
+    row = db.execute(
+        "SELECT 1 FROM qa_pairs WHERE qaid=? AND user_id=?",
+        (qaid, user_id)
+    ).fetchone()
+    if not row:
+        raise PermissionError("qa not found or not owned by user")
+
+    if score is None and (not text or not text.strip()):
+        db.execute(
+            "UPDATE qa_pairs SET review_score=NULL, review_text=NULL, review_at=NULL WHERE qaid=? AND user_id=?",
+            (qaid, user_id)
+        )
+    else:
+        ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        db.execute(
+            "UPDATE qa_pairs SET review_score=?, review_text=?, review_at=? WHERE qaid=? AND user_id=?",
+            (score, (text or "").strip(), ts, qaid, user_id)
+        )
+    db.commit()
