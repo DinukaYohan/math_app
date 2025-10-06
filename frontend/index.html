@@ -99,7 +99,7 @@
 
       <!-- Generate button -->
       <div class="text-end mb-3">
-        <button id="generateBtn" class="btn btn-primary" onclick="submitPrompt()">
+        <button id="generateBtn" class="btn btn-primary">
           <i class="bi bi-magic"></i> Generate
         </button>
       </div>
@@ -107,6 +107,20 @@
       <!-- Output -->
       <div id="outputBox" class="border p-4 bg-light rounded shadow-sm text-start">
         <p id="responseText">Your generated question will appear here...</p>
+      </div>
+
+      <div id="reviewBox" class="mt-3 d-none">
+        <div class="d-flex align-items-center gap-2 mb-2">
+           <button id="thumbUp" class="btn btn-outline-success btn-sm" type="button">👍</button>
+           <button id="thumbDown" class="btn btn-outline-danger btn-sm" type="button">👎</button>
+           <span class="text-muted small">Optional note:</span>
+        </div>
+        <textarea id="reviewText" class="form-control mb-2" rows="2" placeholder="Write a short review (optional)"></textarea>
+        <div class="d-flex gap-2">
+           <button id="saveReviewBtn" class="btn btn-secondary btn-sm" type="button">Save review</button>
+           <button id="clearReviewBtn" class="btn btn-link btn-sm" type="button">Clear</button>
+           <span id="reviewStatus" class="small text-muted ms-2"></span>
+        </div>
       </div>
     </div>
   </main>
