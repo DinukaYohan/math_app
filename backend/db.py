@@ -164,13 +164,10 @@ def get_qa(qaid: str, user_id: int) -> Optional[sqlite3.Row]:
         .fetchone()
     )
 
-def delete_qa(qaid: str, user_id: int) -> int:
-    #Delete a questions and answers item by id, scoped to the owner. Returns number of rows deleted (0 or 1).
+def delete_all_qa_for_user(user_id: int) -> int:
+    """Deletes all history of the user"""
     db = get_db()
-    cur = db.execute(
-        "DELETE FROM qa_pairs WHERE qaid=? AND user_id=?",
-        (qaid, user_id),
-    )
+    cur = db.execute("DELETE FROM qa_pairs WHERE user_id=?", (user_id,))
     db.commit()
     return cur.rowcount
 

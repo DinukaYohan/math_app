@@ -16,7 +16,7 @@ from db import (
     import_learning_objectives_xlsx,
     list_distinct_countries, list_distinct_languages, list_distinct_grades,
     list_topics, list_objectives, combo_is_valid,
-    set_review, 
+    set_review,delete_all_qa_for_user, 
 )
 
 
@@ -242,6 +242,14 @@ def review_endpoint(qaid):
         return jsonify({"error": "not found"}), 404
 
     return jsonify({"qaid": qaid, "review": {"score": score, "text": text}}), 200
+
+#delets the history
+@app.delete("/history")
+@jwt_required()
+def clear_history():
+    uid = int(get_jwt_identity())
+    n = delete_all_qa_for_user(uid)
+    return ("", 204)
 
 
 
