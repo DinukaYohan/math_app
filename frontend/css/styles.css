@@ -16,11 +16,12 @@ body {
   padding: 8px;
   transition: width 0.25s ease;
   z-index: 1000;
-  width: 60px;         /* collapsed width - smaller */
-  overflow: hidden;
+  width: 60px;          /* collapsed */
+  overflow-x: hidden;
 }
+
 .sidebar.expanded {
-  width: 180px;        /* expanded width - smaller */
+  width: 180px;         /* expanded */
 }
 
 /* Logo container - always center logo */
@@ -38,104 +39,146 @@ body {
   height: 55px;
   cursor: pointer;
   object-fit: contain;
-
-  /* clean centering */
   display: block;
-  margin: 0 auto;   /* centers horizontally inside flex container */
+  margin: 0 auto;
 }
-
-
 
 /* Divider line under logo */
 .sidebar-divider {
   border: none;
-  border-top: 1px solid #ffffff; /* white line */
-  margin: 5px 0;         /* space around it */
-  opacity: 0.3;                  /* subtle look */
+  border-top: 1px solid #ffffff;
+  margin: 5px 0;
+  opacity: 0.3;
 }
 
-/* hide contents when collapsed */
-.sidebar:not(.expanded) #sidebar-expanded {
-  display: none !important;
-}
-
-/* Hide icons when expanded */
-.sidebar.expanded #sidebar-icons {
-  display: none !important;
-}
-
-/* Center icons in collapsed state */
-#sidebar-icons {
+/* Sidebar menu (used for both collapsed + expanded) */
+.sidebar-menu {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  flex-grow: 1;
 }
 
-#sidebar-icons .btn {
-  width: 44px;          /* smaller buttons */
-  height: 44px;
+.sidebar-menu .btn {
+  margin-bottom: 8px;   /* add consistent spacing */
+}
+
+.sidebar-menu .btn:last-child {
+  margin-bottom: 0;     /* no extra gap on the very last */
+}
+
+
+/* Sidebar buttons (same style collapsed + expanded) */
+.sidebar-menu .btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 44px;    /* collapsed width */
+  height: 44px;
   padding: 0;
-  background-color: transparent !important;
+  margin-bottom: 8px;
+  
+  background-color: #1b2b34 !important;  /* dark faded button look */
   border: none !important;
-}
-
-#sidebar-icons .btn:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff;
   border-radius: 6px;
+  
+  transition: all 0.25s ease;
 }
 
-/* Icon sizes in collapsed sidebar */
-.sidebar-icon {
-  width: 20px;          /* smaller icons */
-  height: 20px;
-  object-fit: contain;
+.sidebar-menu .btn:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important; /* hover effect */
 }
 
-/* Icon sizes in expanded sidebar */
-.sidebar-icon-small {
-  width: 18px;          /* smaller icons */
-  height: 18px;
-  object-fit: contain;
-  margin-right: 8px;
+/* Hide Login & Sign Up when collapsed */
+.sidebar .btn.no-icon {
+  display: none;   /* completely hidden in collapsed state */
 }
 
-/* Expanded sidebar buttons */
-#sidebar-expanded .btn {
+/* Show them only when expanded */
+.sidebar.expanded .btn.no-icon {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;  /* Changed from center to flex-start for proper alignment */
-  padding: 8px 12px;    /* smaller padding */
-  text-align: left;
-  font-size: 14px;      /* slightly smaller text */
-}
-
-/* the Close button */
-#sidebar-expanded .btn.btn-secondary {
-  justify-content: center !important;
+  width: 100%;
+  justify-content: center;   /* center the text */
   text-align: center;
 }
 
-/* Push main content to the right of the sidebar */
+/* Add border to Login & Sign Up buttons */
+.sidebar.expanded .btn.no-icon {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  border: 2px solid rgba(0, 217, 255, 0.7) !important;  /* cyan border */
+}
+
+/* Expanded state */
+.sidebar.expanded .btn {
+  width: 100%;               /* stretch button across expanded sidebar */
+  justify-content: flex-start;
+  padding: 8px 12px;
+}
+
+.sidebar.expanded .sidebar-icon {
+  margin-right: 8px;         /* space between icon + label */
+}
+
+.sidebar .label {
+  display: none;
+}
+
+.sidebar.expanded .label {
+  display: inline;           /* show text labels only when expanded */
+}
+
+/* Hide labels fully when collapsed */
+.sidebar .label {
+  display: none;
+  white-space: nowrap;   /* prevent line breaks */
+  overflow: hidden;      /* prevent accidental peeking */
+  opacity: 0;            /* invisible when collapsed */
+}
+
+/* Smoothly show when expanded */
+.sidebar.expanded .label {
+  display: inline;
+  opacity: 1;
+}
+
+/* Push main content */
 .main-wrap {
   transition: margin-left 0.25s ease;
-  margin-left: 60px;   /* default to collapsed */
+  margin-left: 60px;  /* collapsed default */
   padding: 20px;
 }
 
+.sidebar.expanded ~ .main-wrap {
+  margin-left: 180px; /* expanded pushes content */
+}
+
 /* Top-right dropdown */
-.navbar { z-index: 999; }
-.dropdown-menu { background-color: #013444; }
-.dropdown-menu a { color: #fff; }
-.dropdown-menu a:hover { background-color: #026179; }
+.navbar {
+  z-index: 999;
+}
+
+.dropdown-menu {
+  background-color: #013444;
+}
+
+.dropdown-menu a {
+  color: #fff;
+}
+
+.dropdown-menu a:hover {
+  background-color: #026179;
+}
 
 /* Output box */
-#outputBox { background-color: #f8f9fa; color: #000; }
+#outputBox {
+  background-color: #f8f9fa;
+  color: #000;
+}
 
-/* Shift logo slightly left only when sidebar is collapsed */
+/* Adjust logo when collapsed */
 .sidebar:not(.expanded) .logo-main {
-  transform: translateX(-4px); /* adjust this value until it looks perfect */
+  transform: translateX(-4px);
 }

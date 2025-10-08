@@ -11,25 +11,47 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/about.css" />
-  <style>
-    .member-card { cursor: pointer; }
-    .member-card:focus { outline: 2px solid #00d9ff; outline-offset: 3px; }
-  </style>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="about-body">
+<body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark px-4">
-    <a href="index.html" class="navbar-brand fw-bold">Math App</a>
-    <div>
-      <a href="index.html" class="btn btn-outline-light me-2"><i class="bi bi-house-door"></i> Home</a>
-      <a href="login.html" class="btn btn-outline-light me-2">Login</a>
-      <a href="signup.html" class="btn btn-light text-dark">Sign Up</a>
-    </div>
-  </nav>
+  <!-- Left Sidebar -->
+<aside id="sidebar" class="sidebar">
+  <!-- Logo -->
+  <img src="logo/mathapp_logo.png" alt="Logo" class="logo-main"
+       onclick="toggleSidebar()"
+       onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" />
+  <div id="logoText" style="display:none; color:#fff; cursor:pointer; margin-bottom:20px;" onclick="toggleSidebar()">☰</div>
 
+  <hr class="sidebar-divider">
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar-menu">
+    <a href="index.html" class="btn">
+      <img src="logo/newchat_logo.png" class="sidebar-icon" />
+      <span class="label">New Chat</span>
+    </a>
+    <a href="history.html" class="btn">
+      <img src="logo/history_logo.png" class="sidebar-icon" />
+      <span class="label">History</span>
+    </a>
+    <a href="about.html" class="btn">
+      <img src="logo/about_logo.png" class="sidebar-icon" />
+      <span class="label">About</span>
+    </a>
+    <a href="login.html" class="btn no-icon">
+      <span class="label">Login</span>
+    </a>
+    <a href="signup.html" class="btn no-icon">
+      <span class="label">Sign Up</span>
+    </a>
+  </div>
+</aside>
+
+  
   <!-- Main Content -->
-  <main class="container mt-5">
+  <main class="main-wrap">
+    <div class="container mt-5">
     <header class="text-center">
       <h1 class="fw-bold mb-3">About Our Project</h1>
       <p class="lead text-light">
@@ -195,6 +217,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/sidebar.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.querySelectorAll('.member-card').forEach(card => {
