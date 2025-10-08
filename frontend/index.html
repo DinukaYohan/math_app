@@ -17,47 +17,37 @@
 <body>
 
   <!-- Left Sidebar -->
-  <aside id="sidebar" class="sidebar">
-    <!-- Main logo at top -->
-    <img src="logo/mathapp_logo.png" alt="Logo" class="logo-main"
-         onclick="toggleSidebar()"
-         onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" />
-    <div id="logoText" style="display:none; color:#fff; cursor:pointer; margin-bottom:20px;" onclick="toggleSidebar()">☰</div>
+<aside id="sidebar" class="sidebar">
+  <!-- Logo -->
+  <img src="logo/mathapp_logo.png" alt="Logo" class="logo-main"
+       onclick="toggleSidebar()"
+       onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" />
+  <div id="logoText" style="display:none; color:#fff; cursor:pointer; margin-bottom:20px;" onclick="toggleSidebar()">☰</div>
 
-    <hr class="sidebar-divider">
+  <hr class="sidebar-divider">
 
-    <!-- Icons shown when collapsed -->
-    <div id="sidebar-icons">
-      <button onclick="newChat()" class="btn btn-dark w-100 mb-2" title="New Chat">
-        <img src="logo/newchat_logo.png" alt="New Chat" class="sidebar-icon" />
-      </button>
-
-      <button onclick="goToHistory()" class="btn btn-dark w-100 mb-2" title="History">
-        <img src="logo/history_logo.png" alt="History" class="sidebar-icon" />
-      </button>
-
-      <a href="about.html" class="btn btn-dark w-100 mb-2" title="About">
-        <img src="logo/about_logo.png" alt="About" class="sidebar-icon" />
-      </a>
-    </div>
-
-    <!-- Full content shown when expanded -->
-    <div id="sidebar-expanded">
-      <button onclick="newChat()" class="btn btn-dark w-100 mb-2">
-        <img src="logo/newchat_logo.png" alt="New Chat" class="sidebar-icon-small" /> New Chat
-      </button>
-
-      <button onclick="goToHistory()" class="btn btn-dark w-100 mb-2">
-        <img src="logo/history_logo.png" alt="History" class="sidebar-icon-small" /> History
-      </button>
-
-      <a href="about.html" class="btn btn-dark w-100 mb-2">
-        <img src="logo/about_logo.png" alt="About" class="sidebar-icon-small" /> About
-      </a>
-
-      <button onclick="toggleSidebar()" class="btn btn-secondary mt-2 w-100">Close</button>
-    </div>
-  </aside>
+  <!-- Sidebar Menu -->
+  <div class="sidebar-menu">
+    <a href="index.html" class="btn">
+      <img src="logo/newchat_logo.png" class="sidebar-icon" />
+      <span class="label">New Chat</span>
+    </a>
+    <a href="history.html" class="btn">
+      <img src="logo/history_logo.png" class="sidebar-icon" />
+      <span class="label">History</span>
+    </a>
+    <a href="about.html" class="btn">
+      <img src="logo/about_logo.png" class="sidebar-icon" />
+      <span class="label">About</span>
+    </a>
+    <a href="login.html" class="btn no-icon">
+      <span class="label">Login</span>
+    </a>
+    <a href="signup.html" class="btn no-icon">
+      <span class="label">Sign Up</span>
+    </a>
+  </div>
+</aside>
 
   <!-- Top-right actions -->
   <nav class="navbar navbar-expand-lg navbar-dark justify-content-end" style="background-color:transparent; box-shadow:none;">
@@ -143,79 +133,12 @@
     </div>
   </main>
 
-  <!-- Page helpers -->
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      const expanded = document.getElementById("sidebar-expanded");
-      const icons = document.getElementById("sidebar-icons");
-      
-      sidebar.classList.toggle("expanded");
-      
-      if (sidebar.classList.contains("expanded")) {
-        expanded.classList.remove("d-none");
-        icons.classList.add("d-none");
-      } else {
-        expanded.classList.add("d-none");
-        icons.classList.remove("d-none");
-      }
-
-      const main = document.querySelector(".main-wrap");
-      main.style.marginLeft = sidebar.classList.contains("expanded") ? "220px" : "80px";
-    }
-    
-    function goToHistory() { window.location.href = "history.html"; }
-
-    function newChat() {
-      // Reset all dropdown selections
-      ["country", "language", "grade", "model", "topic", "learningObjective"].forEach((id) => {
-        const el = document.getElementById(id);
-        if (el && el.tagName === "SELECT") {
-          el.selectedIndex = 0;
-        }
-      });
-
-      // Clear the output box
-      const responseText = document.getElementById("responseText");
-      if (responseText) {
-        responseText.textContent = "Your generated question will appear here...";
-      }
-
-      // Hide review box if visible
-      const reviewBox = document.getElementById("reviewBox");
-      if (reviewBox) {
-        reviewBox.classList.add("d-none");
-      }
-
-      // Clear review text if exists
-      const reviewText = document.getElementById("reviewText");
-      if (reviewText) {
-        reviewText.value = "";
-      }
-
-      // Scroll to top for a clean start
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    // Set sidebar to closed state on page load
-    window.addEventListener("DOMContentLoaded", () => {
-      const sidebar = document.getElementById("sidebar");
-      const main = document.querySelector(".main-wrap");
-      const expanded = document.getElementById("sidebar-expanded");
-      const icons = document.getElementById("sidebar-icons");
-      
-      // Start collapsed
-      sidebar.classList.remove("expanded");
-      expanded.classList.add("d-none");
-      icons.classList.remove("d-none");
-      main.style.marginLeft = "80px";
-    });
-  </script>
-
   <!-- App logic -->
   <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/history.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
