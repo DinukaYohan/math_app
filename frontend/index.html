@@ -12,25 +12,47 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="css/styles.css" />
   <!-- Favicon -->
-  <link rel="icon" href="assets/logo.svg" />
+  <link rel="icon" href="logo/mathapp_logo.png" />
 </head>
 <body>
 
   <!-- Left Sidebar -->
-  <aside id="sidebar" class="sidebar expanded">
-    <img src="assets/logo.svg" alt="Logo" class="logo-icon"
+  <aside id="sidebar" class="sidebar">
+    <!-- Main logo at top -->
+    <img src="logo/mathapp_logo.png" alt="Logo" class="logo-main"
          onclick="toggleSidebar()"
          onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" />
     <div id="logoText" style="display:none; color:#fff; cursor:pointer; margin-bottom:20px;" onclick="toggleSidebar()">☰</div>
 
-    <div id="sidebar-expanded">
-      <button onclick="goToHistory()" class="btn btn-dark w-100 mb-2">
-        <i class="bi bi-clock-history"></i> History
+    <hr class="sidebar-divider">
+
+    <!-- Icons shown when collapsed -->
+    <div id="sidebar-icons">
+      <button onclick="newChat()" class="btn btn-dark w-100 mb-2" title="New Chat">
+        <img src="logo/newchat_logo.png" alt="New Chat" class="sidebar-icon" />
       </button>
 
-      <!-- NEW: About in the sidebar -->
+      <button onclick="goToHistory()" class="btn btn-dark w-100 mb-2" title="History">
+        <img src="logo/history_logo.png" alt="History" class="sidebar-icon" />
+      </button>
+
+      <a href="about.html" class="btn btn-dark w-100 mb-2" title="About">
+        <img src="logo/about_logo.png" alt="About" class="sidebar-icon" />
+      </a>
+    </div>
+
+    <!-- Full content shown when expanded -->
+    <div id="sidebar-expanded">
+      <button onclick="newChat()" class="btn btn-dark w-100 mb-2">
+        <img src="logo/newchat_logo.png" alt="New Chat" class="sidebar-icon-small" /> New Chat
+      </button>
+
+      <button onclick="goToHistory()" class="btn btn-dark w-100 mb-2">
+        <img src="logo/history_logo.png" alt="History" class="sidebar-icon-small" /> History
+      </button>
+
       <a href="about.html" class="btn btn-dark w-100 mb-2">
-        <i class="bi bi-info-circle"></i> About
+        <img src="logo/about_logo.png" alt="About" class="sidebar-icon-small" /> About
       </a>
 
       <button onclick="toggleSidebar()" class="btn btn-secondary mt-2 w-100">Close</button>
@@ -45,10 +67,6 @@
       </a>
       <a href="signup.html" class="btn btn-outline-light">
         <i class="bi bi-person-plus me-1"></i>Sign Up
-      </a>
-      <!-- NEW: About in the top-right -->
-      <a href="about.html" class="btn btn-info">
-        <i class="bi bi-info-circle me-1"></i>About
       </a>
     </div>
   </nav>
@@ -130,20 +148,67 @@
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
       const expanded = document.getElementById("sidebar-expanded");
+      const icons = document.getElementById("sidebar-icons");
+      
       sidebar.classList.toggle("expanded");
-      expanded.classList.toggle("d-none");
+      
+      if (sidebar.classList.contains("expanded")) {
+        expanded.classList.remove("d-none");
+        icons.classList.add("d-none");
+      } else {
+        expanded.classList.add("d-none");
+        icons.classList.remove("d-none");
+      }
 
       const main = document.querySelector(".main-wrap");
       main.style.marginLeft = sidebar.classList.contains("expanded") ? "220px" : "80px";
     }
+    
     function goToHistory() { window.location.href = "history.html"; }
 
+    function newChat() {
+      // Reset all dropdown selections
+      ["country", "language", "grade", "model", "topic", "learningObjective"].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.tagName === "SELECT") {
+          el.selectedIndex = 0;
+        }
+      });
+
+      // Clear the output box
+      const responseText = document.getElementById("responseText");
+      if (responseText) {
+        responseText.textContent = "Your generated question will appear here...";
+      }
+
+      // Hide review box if visible
+      const reviewBox = document.getElementById("reviewBox");
+      if (reviewBox) {
+        reviewBox.classList.add("d-none");
+      }
+
+      // Clear review text if exists
+      const reviewText = document.getElementById("reviewText");
+      if (reviewText) {
+        reviewText.value = "";
+      }
+
+      // Scroll to top for a clean start
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Set sidebar to closed state on page load
     window.addEventListener("DOMContentLoaded", () => {
       const sidebar = document.getElementById("sidebar");
       const main = document.querySelector(".main-wrap");
-      sidebar.classList.add("expanded");
-      document.getElementById("sidebar-expanded").classList.remove("d-none");
-      main.style.marginLeft = "220px";
+      const expanded = document.getElementById("sidebar-expanded");
+      const icons = document.getElementById("sidebar-icons");
+      
+      // Start collapsed
+      sidebar.classList.remove("expanded");
+      expanded.classList.add("d-none");
+      icons.classList.remove("d-none");
+      main.style.marginLeft = "80px";
     });
   </script>
 
