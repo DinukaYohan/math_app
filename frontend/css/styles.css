@@ -12,20 +12,46 @@ body {
   top: 0;
   left: 0;
   height: 100%;
-  background-color: #000000cc;
-  padding: 10px;
+  background-color: #021d29;
+  padding: 8px;
   transition: width 0.25s ease;
   z-index: 1000;
-  width: 80px;         /* collapsed width */
+  width: 60px;         /* collapsed width - smaller */
   overflow: hidden;
 }
 .sidebar.expanded {
-  width: 220px;        /* expanded width */
+  width: 180px;        /* expanded width - smaller */
 }
-.logo-icon {
-  width: 40px;
+
+/* Logo container - always center logo */
+.logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* Main logo at top of sidebar */
+.logo-main {
+  width: 55px; 
+  height: 55px;
   cursor: pointer;
-  margin-bottom: 20px;
+  object-fit: contain;
+
+  /* clean centering */
+  display: block;
+  margin: 0 auto;   /* centers horizontally inside flex container */
+}
+
+
+
+/* Divider line under logo */
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid #ffffff; /* white line */
+  margin: 5px 0;         /* space around it */
+  opacity: 0.3;                  /* subtle look */
 }
 
 /* hide contents when collapsed */
@@ -33,10 +59,70 @@ body {
   display: none !important;
 }
 
+/* Hide icons when expanded */
+.sidebar.expanded #sidebar-icons {
+  display: none !important;
+}
+
+/* Center icons in collapsed state */
+#sidebar-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+#sidebar-icons .btn {
+  width: 44px;          /* smaller buttons */
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background-color: transparent !important;
+  border: none !important;
+}
+
+#sidebar-icons .btn:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 6px;
+}
+
+/* Icon sizes in collapsed sidebar */
+.sidebar-icon {
+  width: 20px;          /* smaller icons */
+  height: 20px;
+  object-fit: contain;
+}
+
+/* Icon sizes in expanded sidebar */
+.sidebar-icon-small {
+  width: 18px;          /* smaller icons */
+  height: 18px;
+  object-fit: contain;
+  margin-right: 8px;
+}
+
+/* Expanded sidebar buttons */
+#sidebar-expanded .btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;  /* Changed from center to flex-start for proper alignment */
+  padding: 8px 12px;    /* smaller padding */
+  text-align: left;
+  font-size: 14px;      /* slightly smaller text */
+}
+
+/* the Close button */
+#sidebar-expanded .btn.btn-secondary {
+  justify-content: center !important;
+  text-align: center;
+}
+
 /* Push main content to the right of the sidebar */
 .main-wrap {
   transition: margin-left 0.25s ease;
-  margin-left: 220px;  /* default to expanded */
+  margin-left: 60px;   /* default to collapsed */
   padding: 20px;
 }
 
@@ -48,3 +134,8 @@ body {
 
 /* Output box */
 #outputBox { background-color: #f8f9fa; color: #000; }
+
+/* Shift logo slightly left only when sidebar is collapsed */
+.sidebar:not(.expanded) .logo-main {
+  transform: translateX(-4px); /* adjust this value until it looks perfect */
+}
