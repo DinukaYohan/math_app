@@ -1,39 +1,42 @@
-/* about.css */
+/* =========================
+   About Page (about.css)
+   ========================= */
 
-/* Global reset */
+/* Global */
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #032c3d; /* same theme as index */
+  background-color: #032c3d; /* consistent theme with index */
   color: #fff;
   line-height: 1.6;
 }
 
-/* Container */
+/* Optional container if you use it elsewhere */
 .about-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 80px auto;
-  padding: 30px;
-  background: rgba(0, 0, 0, 0.6);
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.65);
   border-radius: 12px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
-/* Heading */
+/* Headings */
 .about-container h1 {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
+  font-size: 2.8rem;
+  margin-bottom: 10px;
   color: #00d9ff;
   text-align: center;
+  font-weight: 700;
 }
 
-/* Subheading */
 .about-container h2 {
-  font-size: 1.5rem;
-  margin-top: 25px;
-  margin-bottom: 10px;
+  font-size: 1.8rem;
+  margin-top: 40px;
+  margin-bottom: 20px;
   color: #ffcc00;
+  text-align: center;
 }
 
 /* Paragraphs */
@@ -44,29 +47,151 @@ body {
   text-align: justify;
 }
 
-/* Highlight box */
+/* Highlight / purpose box */
 .highlight-box {
-  margin: 20px 0;
-  padding: 15px 20px;
+  margin: 25px 0;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.1);
-  border-left: 4px solid #00d9ff;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-left: 5px solid #00d9ff;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  text-align: justify;
+  color: #f1f1f1;
 }
 
-/* Footer link */
+/* Simple divider (used in about.html) */
+.divider {
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+/* =========================
+   Team cards (smaller + hover)
+   Works for .member-card (current HTML) and .team-card (legacy)
+   ========================= */
+
+.member-card,
+.team-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 217, 255, 0.35);
+  border-radius: 14px;
+  padding: 18px 16px;            /* compact padding */
+  text-align: center;
+  width: 100%;
+  max-width: 320px;              /* keep cards from getting huge */
+  margin-inline: auto;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.member-card:hover,
+.team-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 217, 255, 0.7);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38);
+}
+
+/* Circular profile photos (support all names you've used) */
+.team-img,
+.team-photo,
+.card-img-top {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 10px auto 14px auto;
+  border: 3px solid rgba(0, 217, 255, 0.6);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.35);
+}
+
+/* Titles & text inside cards */
+.member-card .card-title,
+.team-card .card-title {
+  color: #eaf8ff;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.member-card .card-text,
+.team-card .card-text {
+  color: #a6bed0 !important;
+  margin-bottom: 0.25rem;
+}
+
+.text-light-50 { color: rgba(255,255,255,0.75) !important; }
+
+/* Section headings outside the container */
+h1.fw-bold { color: #eaf8ff; }
+#team-heading { color: #ffcc00; }
+
+/* =========================
+   Responsive tweaks
+   ========================= */
+@media (min-width: 1200px) {
+  /* Make Bootstrap columns stretch cards evenly on very wide screens */
+  .row.g-4 > [class*="col-"] {
+    display: flex;
+  }
+  .member-card,
+  .team-card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .team-img,
+  .team-photo,
+  .card-img-top {
+    width: 110px;
+    height: 110px;
+  }
+  .member-card,
+  .team-card {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-container {
+    margin: 50px 20px;
+    padding: 25px;
+  }
+  .about-container h1 {
+    font-size: 2.2rem;
+  }
+  .member-card,
+  .team-card {
+    padding: 16px;
+    max-width: 260px;
+  }
+  .team-img,
+  .team-photo,
+  .card-img-top {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Footer */
 .about-footer {
   text-align: center;
-  margin-top: 25px;
-  font-size: 0.9rem;
+  margin-top: 40px;
+  font-size: 0.95rem;
+  color: #aaa;
 }
-
 .about-footer a {
   color: #00d9ff;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
 }
+.about-footer a:hover { text-decoration: underline; }
 
-.about-footer a:hover {
-  text-decoration: underline;
+/* (Optional) legacy grid support if you ever use .team-grid container */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin-top: 30px;
+  justify-items: center;
 }

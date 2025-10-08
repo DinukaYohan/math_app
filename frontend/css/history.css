@@ -1,0 +1,61 @@
+/* Page theme */
+.history-body {
+  background: #0f2e39;
+  color: #e9f3f7;
+}
+
+/* Title */
+.page-title {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* Card/list styling */
+.card {
+  background: #0f3542;
+}
+
+.list-group-item {
+  background: transparent;
+  color: #e9f3f7;
+  border-color: rgba(255,255,255,0.08);
+}
+
+.list-group-item:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Metadata chips */
+.meta {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  background: rgba(255,255,255,0.08);
+  color: #bcd9e6;
+}
+
+/* Empty state */
+.empty-state .empty-illustration {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.18);
+  display: grid;
+  place-items: center;
+}
+
+.empty-state .empty-illustration i {
+  font-size: 34px;
+  color: #00d4ff;
+}
+
+/* Action buttons */
+.btn-outline-secondary,
+.btn-danger,
+.btn-primary {
+  border-radius: 10px;
+}

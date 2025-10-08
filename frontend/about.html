@@ -2,84 +2,230 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>About • Generate Math Questions</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About | Math App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <link rel="icon" href="assets/logo.svg" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/about.css" />
+  <style>
+    .member-card { cursor: pointer; }
+    .member-card:focus { outline: 2px solid #00d9ff; outline-offset: 3px; }
+  </style>
 </head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:transparent; box-shadow:none;">
-    <div class="container d-flex justify-content-between">
-      <a class="btn btn-outline-light" href="index.html"><i class="bi bi-arrow-left"></i> Back</a>
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">☰</button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="login.html">Login</a></li>
-          <li><a class="dropdown-item" href="signup.html">Sign Up</a></li>
-          <li><a class="dropdown-item active" href="about.html">About</a></li>
-        </ul>
-      </div>
+<body class="about-body">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-dark px-4">
+    <a href="index.html" class="navbar-brand fw-bold">Math App</a>
+    <div>
+      <a href="index.html" class="btn btn-outline-light me-2"><i class="bi bi-house-door"></i> Home</a>
+      <a href="login.html" class="btn btn-outline-light me-2">Login</a>
+      <a href="signup.html" class="btn btn-light text-dark">Sign Up</a>
     </div>
   </nav>
 
-  <main class="container py-5 text-light">
-    <header class="text-center mb-4">
-      <h1 class="fw-bold">About This Project</h1>
-      <p class="text-opacity-75">A simple tool to generate curriculum-aware math questions.</p>
+  <!-- Main Content -->
+  <main class="container mt-5">
+    <header class="text-center">
+      <h1 class="fw-bold mb-3">About Our Project</h1>
+      <p class="lead text-light">
+        The Math App helps students and teachers generate curriculum-aware math questions by grade, language,
+        country, topic, and model. Our aim is to make practice fast, consistent, and accessible.
+      </p>
     </header>
 
-    <section class="row g-4">
-      <div class="col-12 col-lg-6">
-        <div class="p-4 rounded-3 bg-dark bg-opacity-50 h-100">
-          <h4 class="mb-2"><i class="bi bi-bullseye"></i> Purpose</h4>
-          <p class="mb-0">
-            This website helps students and teachers quickly create math practice questions. You can choose the
-            country, language, grade, and the AI model to tailor questions to your needs.
-          </p>
+    <hr class="divider my-5">
+
+    <!-- Team -->
+    <section aria-labelledby="team-heading">
+      <h2 id="team-heading" class="text-warning text-center mb-4">Our Team</h2>
+
+      <!-- Row 1 -->
+      <div class="row g-4 justify-content-center mb-3">
+        <!-- Dinuka -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card member-card h-100 text-center"
+               tabindex="0"
+               data-name="Dinuka Yohan"
+               data-role="Backend Developer"
+               data-details="
+               • Built backend endpoints and generation logic.
+               • Connected models and handled request/response flows.
+               • Collaborated with frontend to define clean JSON APIs.">
+            <img src="pictures/Dinuka.jpeg" alt="Dinuka Yohan" class="card-img-top team-img mx-auto mt-3" />
+            <div class="card-body">
+              <h5 class="card-title mb-1">Dinuka Yohan</h5>
+              <p class="card-text text-secondary mb-2">Backend Developer</p>
+              <p class="small text-light-50 mb-0">
+                Developed backend endpoints and logic for question generation.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sunera -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card member-card h-100 text-center"
+               tabindex="0"
+               data-name="Sunera Hewage"
+               data-role="Backend Developer"
+               data-details="
+               • Implemented REST APIs and server-side integration.
+               • Optimized response structure and error handling.
+               • Maintained deployment/config for backend services.">
+            <img src="pictures/sunera.png" alt="Sunera Hewage" class="card-img-top team-img mx-auto mt-3" />
+            <div class="card-body">
+              <h5 class="card-title mb-1">Sunera Hewage</h5>
+              <p class="card-text text-secondary mb-2">Backend Developer</p>
+              <p class="small text-light-50 mb-0">
+                Implemented backend APIs and server-side integration.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benul (UPDATED) -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card member-card h-100 text-center"
+               tabindex="0"
+               data-name="Benul Santhush"
+               data-role="Database & Model Integration"
+               data-details="
+               • Implemented the database (schema, CRUD, access layer).
+               • Added OpenAI ChatGPT model integration for generation.
+               • Designed data flows between API, DB, and model.">
+            <img src="pictures/benul.jpeg" alt="Benul Santhush" class="card-img-top team-img mx-auto mt-3" />
+            <div class="card-body">
+              <h5 class="card-title mb-1">Benul Santhush</h5>
+              <p class="card-text text-secondary mb-2">Database & Model Integration</p>
+              <p class="small text-light-50 mb-0">
+                Implemented database and integrated OpenAI ChatGPT model.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="col-12 col-lg-6">
-        <div class="p-4 rounded-3 bg-dark bg-opacity-50 h-100">
-          <h4 class="mb-2"><i class="bi bi-gear"></i> How it works</h4>
-          <ol class="mb-0 ps-3">
-            <li>Enter a short prompt (e.g., “fractions word problems”).</li>
-            <li>Select Country, Language, Grade, and Model.</li>
-            <li>Click the arrow to generate questions in the output box.</li>
-          </ol>
+      <!-- Row 2 -->
+      <div class="row g-4 justify-content-center">
+        <!-- Vimukthi -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card member-card h-100 text-center"
+               tabindex="0"
+               data-name="Vimukthi Wepitiyage"
+               data-role="Frontend Developer"
+               data-details="
+               • Built main UI (filters, topic dropdown, generate flow).
+               • Implemented forms and interactive components.
+               • Wired pages: home, history, login, signup, about.">
+            <img src="pictures/Vimukthi.png" alt="Vimukthi Wepitiyage" class="card-img-top team-img mx-auto mt-3" />
+            <div class="card-body">
+              <h5 class="card-title mb-1">Vimukthi Wepitiyage</h5>
+              <p class="card-text text-secondary mb-2">Frontend Developer</p>
+              <p class="small text-light-50 mb-0">
+                Built main frontend UI, forms, and feature integrations.
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="col-12 col-lg-6">
-        <div class="p-4 rounded-3 bg-dark bg-opacity-50 h-100">
-          <h4 class="mb-2"><i class="bi bi-shield-check"></i> Privacy</h4>
-          <p class="mb-0">
-            We only use the text you provide to produce questions. Do not include personal or sensitive information
-            in prompts. Your session data is cleared when you start a new chat.
-          </p>
-        </div>
-      </div>
-
-      <div class="col-12 col-lg-6">
-        <div class="p-4 rounded-3 bg-dark bg-opacity-50 h-100">
-          <h4 class="mb-2"><i class="bi bi-people"></i> Contact</h4>
-          <p class="mb-1">Have feedback or found a bug?</p>
-          <ul class="mb-0 ps-3">
-            <li>Email: <a href="mailto:team@example.com" class="link-light">team@example.com</a></li>
-            <li>GitHub: <a href="https://github.com/DinukaYohan/math_app" class="link-light">DinukaYohan/math_app</a></li>
-          </ul>
+        <!-- Kavish -->
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card member-card h-100 text-center"
+               tabindex="0"
+               data-name="Kavish Ratnayaka"
+               data-role="Frontend Developer"
+               data-details="
+               • Designed responsive layout & authentication pages.
+               • Styled components and improved accessibility.
+               • Helped refine UX for mobile and desktop.">
+            <img src="pictures/kavish.jpeg" alt="Kavish Ratnayaka" class="card-img-top team-img mx-auto mt-3" />
+            <div class="card-body">
+              <h5 class="card-title mb-1">Kavish Ratnayaka</h5>
+              <p class="card-text text-secondary mb-2">Frontend Developer</p>
+              <p class="small text-light-50 mb-0">
+                Designed responsive layout and authentication pages.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <div class="text-center mt-5">
-      <a href="index.html" class="btn btn-primary"><i class="bi bi-chat-dots"></i> Start Generating</a>
-    </div>
+    <hr class="divider my-5">
+
+    <!-- Tech -->
+    <section class="text-center" aria-labelledby="tech-heading">
+      <h3 id="tech-heading" class="text-info mb-3">Technologies Used</h3>
+      <p class="text-light mb-1"><b>Frontend:</b> HTML, CSS, Bootstrap, JavaScript</p>
+      <p class="text-light mb-1"><b>Backend:</b> Python (Flask)</p>
+      <p class="text-light mb-1"><b>Database:</b> MySQL</p>
+      <p class="text-light"><b>Version Control:</b> Git & GitHub</p>
+      <a class="btn btn-outline-light mt-2" href="index.html">
+        <i class="bi bi-magic"></i> Start Generating
+      </a>
+    </section>
   </main>
 
+  <footer class="text-center text-light py-4 mt-5">
+    © 2025 Math App · All Rights Reserved
+  </footer>
+
+  <!-- Member Details Modal -->
+  <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background:#0d2c3a; color:#fff; border:1px solid #00d9ff;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="memberModalLabel">Member</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-1 text-info" id="memberRole">Role</p>
+          <ul class="mb-0" id="memberDetails" style="margin-left: -1rem;"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.querySelectorAll('.member-card').forEach(card => {
+      card.addEventListener('click', () => openMember(card));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openMember(card);
+        }
+      });
+    });
+
+    function openMember(card) {
+      const name = card.dataset.name || 'Team Member';
+      const role = card.dataset.role || '';
+      const details = (card.dataset.details || '').split('•').map(s => s.trim()).filter(Boolean);
+
+      document.getElementById('memberModalLabel').textContent = name;
+      document.getElementById('memberRole').textContent = role;
+
+      const list = document.getElementById('memberDetails');
+      list.innerHTML = '';
+      details.forEach(d => {
+        const li = document.createElement('li');
+        li.textContent = d;
+        list.appendChild(li);
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById('memberModal'));
+      modal.show();
+    }
+  </script>
 </body>
 </html>
