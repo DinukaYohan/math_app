@@ -14,6 +14,10 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     localStorage.setItem("token", access_token);
     if (username) localStorage.setItem("username", username);
 
+    // mark user as logged in only after success
+    localStorage.setItem("loggedIn", "true");
+
+    // redirect to app
     window.location.href = "index.html";
   } catch (err) {
     console.error(err);
