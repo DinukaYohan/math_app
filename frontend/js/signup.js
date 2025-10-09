@@ -18,8 +18,10 @@ function validateForm() {
     return false;
   }
   form.classList.remove("was-validated");
+
   const pwd = $("password").value.trim();
   const cpwd = $("confirmPassword").value.trim();
+
   if (pwd.length < 6) {
     $("password").setCustomValidity("Password too short");
     form.classList.add("was-validated");
@@ -47,18 +49,26 @@ $("signupForm").addEventListener("submit", async (e) => {
   const password = $("password").value.trim();
 
   try {
-    // NOTE: backend route is /auth/register (not /auth/signup)
-    const data = await apiRequest("/auth/register", {
+    // 1) Create the account
+    await apiRequest("/auth/register", {
       method: "POST",
       body: { username, email, password },
     });
 
-    // If backend returns a token on signup, you could store it here.
-    if (data.access_token) localStorage.setItem("token", data.access_token);
-    if (data.username) localStorage.setItem("username", data.username);
+    // 2) Immediately login to get token + canonical username
+    const loginData = await apiRequest("/auth/login", {
+      method: "POST",
+      body: { email, password },
+    });
 
-    showAlert("success", "Account created! Redirecting to login…");
-    setTimeout(() => (window.location.href = "login.html"), 1000);
+    const { access_token, username: uname } = loginData;
+
+    if (access_token) localStorage.setItem("token", access_token);
+    if (uname) localStorage.setItem("username", uname);
+    localStorage.setItem("loggedIn", "true");
+
+    // 3) Go straight to the app
+    window.location.href = "index.html";
   } catch (err) {
     console.error(err);
     showAlert("danger", err.message || "Signup failed. Please try again.");
