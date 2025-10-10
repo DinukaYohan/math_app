@@ -171,6 +171,14 @@ def delete_all_qa_for_user(user_id: int) -> int:
     db.commit()
     return cur.rowcount
 
+def delete_qa(qaid: str, user_id: int) -> int:
+    """Delete a single Q/A by id for the owner. Returns rows deleted (0 or 1)."""
+    db = get_db()
+    cur = db.execute("DELETE FROM qa_pairs WHERE qaid=? AND user_id=?", (qaid, user_id))
+    db.commit()
+    return cur.rowcount
+
+
 # --------- Data from the excel file importer and utilities ----------
 
 #cleans up text values from excel so they’re safe and consistent.
