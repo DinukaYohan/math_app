@@ -11,6 +11,7 @@ const els = {
   loginAlert: $("loginAlert"),   // optional (friendly banner)
   emptyState: $("emptyState"),   // optional (illustrated empty box)
   clearAllBtn: $("clearAllBtn"), // optional (Clear History button)
+  footer: $("historyFooter"),
 };
 
 function esc(s) {
@@ -87,8 +88,12 @@ function renderItems(items) {
   els.list.innerHTML = "";
   if (!items || !items.length) {
     showEmpty();
+    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none"); // hide button if empty
     return;
   }
+
+    // Show clear button only if history exists
+  if (els.clearAllBtn) els.clearAllBtn.classList.remove("d-none");
 
   // Newest first if backend isn't sorted
   const sorted = [...items].sort(
@@ -184,10 +189,9 @@ async function clearAll() {
   try {
     await apiDeleteAll(token);
   } catch (e) {
-    // If your backend doesn’t support DELETE /history yet, fail silently
+    
     console.warn("DELETE /history not supported. Please implement on backend.", e);
   } finally {
-    // Re-fetch to reflect the change
     await loadHistory();
   }
 }
@@ -226,6 +230,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // Clear all button if present
   if (els.clearAllBtn) {
     els.clearAllBtn.addEventListener("click", clearAll);
+  }
+
+  // Add login check here
+  const token = localStorage.getItem("token");
+  const loginAlert = document.getElementById("loginAlert");
+  const card = document.querySelector(".card");
+
+  if (!token) {
+    if (loginAlert) loginAlert.classList.remove("d-none");
+    if (card) card.classList.add("d-none");
+    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none"); // hide button
+    if (els.footer) els.footer.classList.add("d-none");           // hide footer
+    return; // stop, don’t call loadHistory
+  } else {
+    if (loginAlert) loginAlert.classList.add("d-none");
+    if (card) card.classList.remove("d-none");
+    if (els.clearAllBtn) els.clearAllBtn.classList.remove("d-none"); // show button
+    if (els.footer) els.footer.classList.remove("d-none");           // show footer
   }
 
   // Initial load
