@@ -80,14 +80,13 @@ async function apiDeleteOne(token, id) {
   return true;
 }
 
-// ===== Renderers =====
 function renderItems(items) {
   if (!els.list) return;
 
   els.list.innerHTML = "";
   if (!items || !items.length) {
     showEmpty();
-    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none");
+    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none"); // hide button if empty
     return;
   }
 
@@ -105,13 +104,16 @@ function renderItems(items) {
 
     // Build meta chips (Aligned LO now matches chip style)
     const chips = [];
-    if (meta.country)  chips.push(`<span class="meta"><i class="bi bi-geo-alt"></i>${esc(meta.country)}</span>`);
-    if (meta.language) chips.push(`<span class="meta"><i class="bi bi-translate"></i>${esc(meta.language)}</span>`);
-    if (meta.grade)    chips.push(`<span class="meta"><i class="bi bi-journal-text"></i>Grade ${esc(meta.grade)}</span>`);
-    if (meta.topic)    chips.push(`<span class="meta"><i class="bi bi-book"></i>${esc(meta.topic)}</span>`);
-    if (meta.learning_objective) {
+    if (meta.country)
+      chips.push(`<span class="meta"><i class="bi bi-geo-alt"></i>${esc(meta.country)}</span>`);
+    if (meta.language)
+      chips.push(`<span class="meta"><i class="bi bi-translate"></i>${esc(meta.language)}</span>`);
+    if (meta.grade)
+      chips.push(`<span class="meta"><i class="bi bi-journal-text"></i>Grade ${esc(meta.grade)}</span>`);
+    if (meta.topic)
+      chips.push(`<span class="meta"><i class="bi bi-book"></i>${esc(meta.topic)}</span>`);
+    if (meta.learning_objective)
       chips.push(`<span class="meta"><i class="bi bi-mortarboard"></i>LO: ${esc(meta.learning_objective)}</span>`);
-    }
 
     // Review summary (if any)
     let reviewHtml = "";
@@ -125,26 +127,43 @@ function renderItems(items) {
     }
 
     const dateStr = fmtDate(it.created_at);
-    const title = it.title || it.prompt || it.question || `Chat #${i + 1}`;
-    const preview = it.preview || it.question || "";
+    const model = esc(it.model || "—");
 
+    // === Question and Answer Display (Formatted for readability) ===
+    // We’ll no longer show “Prompt”, only Generated Output.
+    const answer = (it.output_html || it.answer_html || it.answer || "")
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // bold markdown
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")             // italic markdown
+      .replace(/\\times/g, "×")                         // replace LaTeX symbols
+      .replace(/\\div/g, "÷")
+      .replace(/\\pi/g, "π")
+      .replace(/\\text\{(.*?)\}/g, "$1")
+      .replace(/\n{2,}/g, "</p><p>")
+      .replace(/\n/g, "<br>")
+      .replace(/^/, "<p>")
+      .replace(/$/, "</p>");
+
+    // Create list item container
     const li = document.createElement("li");
     li.className = "list-group-item py-3";
     li.innerHTML = `
       <div class="history-item-container">
-        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-5">
-          <div class="flex-grow-1">
-            <div class="fw-semibold">${esc(title)}</div>
-            ${preview ? `<div class="text-secondary small mt-1">${esc(preview)}</div>` : ""}
-            <div class="d-flex flex-wrap gap-2 mt-2">${chips.join("")}</div>
-            ${reviewHtml}
-          </div>
 
-          <div class="text-end">
-            <div class="small text-muted mb-2">Model: ${esc(it.model || "—")} • ${esc(dateStr)}</div>
-          </div>
+        <!-- Generated Output Section -->
+        <div class="p-3 mb-3 rounded" style="background: rgba(255,255,255,0.05);">
+          <div class="fw-semibold text-info mb-2">Generated Output:</div>
+          <div class="text-light" style="white-space: normal;">${answer}</div>
         </div>
-    
+
+        <!-- Meta Chips Section -->
+        <div class="d-flex flex-wrap gap-2 mb-2">${chips.join("")}</div>
+
+        <!-- Model and Date Section (now visible white text) -->
+        <div class="small" style="color: #ffffff;">Model: ${model} • ${dateStr}</div>
+
+        ${reviewHtml}
+
+        <!-- Delete Button -->
         ${it.qaid ? `<button class="btn btn-sm btn-danger delete-btn-bottom-right" data-del="${esc(it.qaid)}" title="Delete this entry">
           <i class="bi bi-trash3"></i> Delete
         </button>` : ""}
@@ -153,6 +172,7 @@ function renderItems(items) {
     els.list.appendChild(li);
   }
 }
+
 
 // ===== Page actions =====
 async function loadHistory() {
