@@ -124,7 +124,27 @@ async function onGenerateClick(e) {
     out.textContent = "Generating...";
 
     const res = await apiRequest("/generate", { method: "POST", body, auth: true });
-    out.textContent = res?.content || "(No content returned)";
+    // Format content for cleaner HTML display
+    let formatted = res?.content || "(No content returned)";
+
+    // Replace Markdown bold (**) or single *word* with <strong>
+    formatted = formatted
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // double asterisks
+      .replace(/\*(.*?)\*/g, "<strong>$1</strong>");     // single asterisks
+
+    // Replace LaTeX-like $...$ with inline <span> (keeps text readable)
+    formatted = formatted.replace(/\$(.*?)\$/g, "<em>$1</em>");
+
+    // Add paragraph breaks (optional: improves spacing between sections)
+    formatted = formatted
+      .replace(/\n{2,}/g, "</p><p>")
+      .replace(/\n/g, "<br>")
+      .replace(/^/, "<p>")
+      .replace(/$/, "</p>");
+
+    // Finally, display HTML (not plain text)
+    out.innerHTML = formatted;
+
     lastQaid = res?.qaid || null;
 
     // Enable review box (optional feature)
