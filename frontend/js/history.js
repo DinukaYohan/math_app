@@ -63,7 +63,6 @@ async function apiFetchHistory(token) {
 }
 
 async function apiDeleteAll(token) {
-  // Prefer DELETE /history
   const res = await fetch(`${API_BASE}/history`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
@@ -88,11 +87,11 @@ function renderItems(items) {
   els.list.innerHTML = "";
   if (!items || !items.length) {
     showEmpty();
-    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none"); // hide button if empty
+    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none");
     return;
   }
 
-    // Show clear button only if history exists
+  // Show clear button only if history exists
   if (els.clearAllBtn) els.clearAllBtn.classList.remove("d-none");
 
   // Newest first if backend isn't sorted
@@ -104,17 +103,17 @@ function renderItems(items) {
     const it = sorted[i] || {};
     const meta = it.meta || {};
 
+    // Build meta chips (Aligned LO now matches chip style)
     const chips = [];
     if (meta.country)  chips.push(`<span class="meta"><i class="bi bi-geo-alt"></i>${esc(meta.country)}</span>`);
     if (meta.language) chips.push(`<span class="meta"><i class="bi bi-translate"></i>${esc(meta.language)}</span>`);
     if (meta.grade)    chips.push(`<span class="meta"><i class="bi bi-journal-text"></i>Grade ${esc(meta.grade)}</span>`);
     if (meta.topic)    chips.push(`<span class="meta"><i class="bi bi-book"></i>${esc(meta.topic)}</span>`);
+    if (meta.learning_objective) {
+      chips.push(`<span class="meta"><i class="bi bi-mortarboard"></i>LO: ${esc(meta.learning_objective)}</span>`);
+    }
 
-    const lo =
-      meta.learning_objective
-        ? `<div class="small text-info mt-1"><i class="bi bi-mortarboard"></i> Aligned LO: ${esc(meta.learning_objective)}</div>`
-        : "";
-
+    // Review summary (if any)
     let reviewHtml = "";
     const score = it.review_score;
     const icon = score === 1 ? "👍" : score === -1 ? "👎" : "";
@@ -132,23 +131,23 @@ function renderItems(items) {
     const li = document.createElement("li");
     li.className = "list-group-item py-3";
     li.innerHTML = `
-      <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-        <div class="flex-grow-1">
-          <div class="fw-semibold">${esc(title)}</div>
-          ${preview ? `<div class="text-secondary small mt-1">${esc(preview)}</div>` : ""}
-          <div class="d-flex flex-wrap gap-2 mt-2">${chips.join("")}</div>
-          ${lo}
-          ${reviewHtml}
-        </div>
+      <div class="history-item-container">
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-5">
+          <div class="flex-grow-1">
+            <div class="fw-semibold">${esc(title)}</div>
+            ${preview ? `<div class="text-secondary small mt-1">${esc(preview)}</div>` : ""}
+            <div class="d-flex flex-wrap gap-2 mt-2">${chips.join("")}</div>
+            ${reviewHtml}
+          </div>
 
-        <div class="text-end">
-          <div class="small text-muted mb-2">Model: ${esc(it.model || "—")} • ${esc(dateStr)}</div>
-          <div class="d-flex gap-2 justify-content-end">
-            ${it.id ? `<button class="btn btn-sm btn-outline-danger" data-del="${esc(it.id)}">
-              <i class="bi bi-trash3"></i>
-            </button>` : ""}
+          <div class="text-end">
+            <div class="small text-muted mb-2">Model: ${esc(it.model || "—")} • ${esc(dateStr)}</div>
           </div>
         </div>
+    
+        ${it.qaid ? `<button class="btn btn-sm btn-danger delete-btn-bottom-right" data-del="${esc(it.qaid)}" title="Delete this entry">
+          <i class="bi bi-trash3"></i> Delete
+        </button>` : ""}
       </div>
     `;
     els.list.appendChild(li);
@@ -189,7 +188,6 @@ async function clearAll() {
   try {
     await apiDeleteAll(token);
   } catch (e) {
-    
     console.warn("DELETE /history not supported. Please implement on backend.", e);
   } finally {
     await loadHistory();
