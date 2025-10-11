@@ -127,22 +127,27 @@ async function onGenerateClick(e) {
     // Format content for cleaner HTML display
     let formatted = res?.content || "(No content returned)";
 
-    // Replace Markdown bold (**) or single *word* with <strong>
+    // Clean up LaTeX-style math and symbols
     formatted = formatted
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // double asterisks
-      .replace(/\*(.*?)\*/g, "<strong>$1</strong>");     // single asterisks
+      .replace(/\\times/g, "×")                // replace \times → ×
+      .replace(/\\div/g, "÷")                  // replace \div → ÷
+      .replace(/\\pi/g, "π")                   // replace \pi → π
+      .replace(/\\text\{(.*?)\}/g, "$1")       // remove \text{...}
+      .replace(/\\frac\{(.*?)\}\{(.*?)\}/g, "($1 ÷ $2)"); // fraction → (a ÷ b)
 
-    // Replace LaTeX-like $...$ with inline <span> (keeps text readable)
-    formatted = formatted.replace(/\$(.*?)\$/g, "<em>$1</em>");
+    // Markdown bold/italic
+    formatted = formatted
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // **bold**
+      .replace(/\*(.*?)\*/g, "<em>$1</em>");             // *italic*
 
-    // Add paragraph breaks (optional: improves spacing between sections)
+    // Spacing and paragraphs
     formatted = formatted
       .replace(/\n{2,}/g, "</p><p>")
       .replace(/\n/g, "<br>")
       .replace(/^/, "<p>")
       .replace(/$/, "</p>");
 
-    // Finally, display HTML (not plain text)
+    // Render result
     out.innerHTML = formatted;
 
     lastQaid = res?.qaid || null;
