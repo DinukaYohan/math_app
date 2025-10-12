@@ -53,6 +53,34 @@ function hideBanners() {
   if (els.emptyState) els.emptyState.classList.add("d-none");
 }
 
+// === Custom confirmation modal (replaces browser confirm) ===
+function showConfirmDialog({ title = "Confirm", message = "Are you sure?", confirmText = "OK", cancelText = "Cancel" }) {
+  return new Promise((resolve) => {
+    const modalEl = document.getElementById("confirmModal");
+    const modal = new bootstrap.Modal(modalEl);
+    const titleEl = document.getElementById("confirmModalTitle");
+    const bodyEl = document.getElementById("confirmModalBody");
+    const yesBtn = document.getElementById("confirmModalYesBtn");
+
+    titleEl.textContent = title;
+    bodyEl.textContent = message;
+    yesBtn.textContent = confirmText;
+
+    const onConfirm = () => {
+      resolve(true);
+      modal.hide();
+    };
+
+    const onCancel = () => resolve(false);
+
+    yesBtn.onclick = onConfirm;
+    modalEl.addEventListener("hidden.bs.modal", onCancel, { once: true });
+
+    modal.show();
+  });
+}
+
+
 // ===== API calls =====
 async function apiFetchHistory(token) {
   const res = await fetch(`${API_BASE}/history?limit=50`, {
@@ -202,7 +230,12 @@ async function clearAll() {
     showLoggedOut();
     return;
   }
-  const ok = confirm("Clear all history? This cannot be undone.");
+
+  const ok = await showConfirmDialog({
+    title: "Clear All History",
+    message: "Are you sure you want to clear your entire history? This cannot be undone.",
+    confirmText: "Yes, Clear All"
+  });
   if (!ok) return;
 
   try {
@@ -214,13 +247,20 @@ async function clearAll() {
   }
 }
 
+
 async function deleteOne(id) {
   const token = localStorage.getItem("token");
   if (!token) {
     showLoggedOut();
     return;
   }
-  const ok = confirm("Delete this history item?");
+
+  // Replace the confirm() line with this custom modal:
+  const ok = await showConfirmDialog({
+    title: "Delete History Item",
+    message: "Are you sure you want to delete this history item?",
+    confirmText: "Yes, Delete"
+  });
   if (!ok) return;
 
   try {
