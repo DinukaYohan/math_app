@@ -124,7 +124,32 @@ async function onGenerateClick(e) {
     out.textContent = "Generating...";
 
     const res = await apiRequest("/generate", { method: "POST", body, auth: true });
-    out.textContent = res?.content || "(No content returned)";
+    // Format content for cleaner HTML display
+    let formatted = res?.content || "(No content returned)";
+
+    // Clean up LaTeX-style math and symbols
+    formatted = formatted
+      .replace(/\\times/g, "×")                // replace \times → ×
+      .replace(/\\div/g, "÷")                  // replace \div → ÷
+      .replace(/\\pi/g, "π")                   // replace \pi → π
+      .replace(/\\text\{(.*?)\}/g, "$1")       // remove \text{...}
+      .replace(/\\frac\{(.*?)\}\{(.*?)\}/g, "($1 ÷ $2)"); // fraction → (a ÷ b)
+
+    // Markdown bold/italic
+    formatted = formatted
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")  // **bold**
+      .replace(/\*(.*?)\*/g, "<em>$1</em>");             // *italic*
+
+    // Spacing and paragraphs
+    formatted = formatted
+      .replace(/\n{2,}/g, "</p><p>")
+      .replace(/\n/g, "<br>")
+      .replace(/^/, "<p>")
+      .replace(/$/, "</p>");
+
+    // Render result
+    out.innerHTML = formatted;
+
     lastQaid = res?.qaid || null;
 
     // Enable review box (optional feature)

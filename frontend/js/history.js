@@ -11,6 +11,7 @@ const els = {
   loginAlert: $("loginAlert"),   // optional (friendly banner)
   emptyState: $("emptyState"),   // optional (illustrated empty box)
   clearAllBtn: $("clearAllBtn"), // optional (Clear History button)
+  footer: $("historyFooter"),
 };
 
 function esc(s) {
@@ -62,7 +63,6 @@ async function apiFetchHistory(token) {
 }
 
 async function apiDeleteAll(token) {
-  // Prefer DELETE /history
   const res = await fetch(`${API_BASE}/history`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
@@ -80,15 +80,18 @@ async function apiDeleteOne(token, id) {
   return true;
 }
 
-// ===== Renderers =====
 function renderItems(items) {
   if (!els.list) return;
 
   els.list.innerHTML = "";
   if (!items || !items.length) {
     showEmpty();
+    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none"); // hide button if empty
     return;
   }
+
+  // Show clear button only if history exists
+  if (els.clearAllBtn) els.clearAllBtn.classList.remove("d-none");
 
   // Newest first if backend isn't sorted
   const sorted = [...items].sort(
@@ -99,17 +102,20 @@ function renderItems(items) {
     const it = sorted[i] || {};
     const meta = it.meta || {};
 
+    // Build meta chips (Aligned LO now matches chip style)
     const chips = [];
-    if (meta.country)  chips.push(`<span class="meta"><i class="bi bi-geo-alt"></i>${esc(meta.country)}</span>`);
-    if (meta.language) chips.push(`<span class="meta"><i class="bi bi-translate"></i>${esc(meta.language)}</span>`);
-    if (meta.grade)    chips.push(`<span class="meta"><i class="bi bi-journal-text"></i>Grade ${esc(meta.grade)}</span>`);
-    if (meta.topic)    chips.push(`<span class="meta"><i class="bi bi-book"></i>${esc(meta.topic)}</span>`);
+    if (meta.country)
+      chips.push(`<span class="meta"><i class="bi bi-geo-alt"></i>${esc(meta.country)}</span>`);
+    if (meta.language)
+      chips.push(`<span class="meta"><i class="bi bi-translate"></i>${esc(meta.language)}</span>`);
+    if (meta.grade)
+      chips.push(`<span class="meta"><i class="bi bi-journal-text"></i>Grade ${esc(meta.grade)}</span>`);
+    if (meta.topic)
+      chips.push(`<span class="meta"><i class="bi bi-book"></i>${esc(meta.topic)}</span>`);
+    if (meta.learning_objective)
+      chips.push(`<span class="meta"><i class="bi bi-mortarboard"></i>LO: ${esc(meta.learning_objective)}</span>`);
 
-    const lo =
-      meta.learning_objective
-        ? `<div class="small text-info mt-1"><i class="bi bi-mortarboard"></i> Aligned LO: ${esc(meta.learning_objective)}</div>`
-        : "";
-
+    // Review summary (if any)
     let reviewHtml = "";
     const score = it.review_score;
     const icon = score === 1 ? "👍" : score === -1 ? "👎" : "";
@@ -121,34 +127,52 @@ function renderItems(items) {
     }
 
     const dateStr = fmtDate(it.created_at);
-    const title = it.title || it.prompt || it.question || `Chat #${i + 1}`;
-    const preview = it.preview || it.question || "";
+    const model = esc(it.model || "—");
 
+    // === Question and Answer Display (Formatted for readability) ===
+    // We’ll no longer show “Prompt”, only Generated Output.
+    const answer = (it.output_html || it.answer_html || it.answer || "")
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // bold markdown
+      .replace(/\*(.*?)\*/g, "<em>$1</em>")             // italic markdown
+      .replace(/\\times/g, "×")                         // replace LaTeX symbols
+      .replace(/\\div/g, "÷")
+      .replace(/\\pi/g, "π")
+      .replace(/\\text\{(.*?)\}/g, "$1")
+      .replace(/\n{2,}/g, "</p><p>")
+      .replace(/\n/g, "<br>")
+      .replace(/^/, "<p>")
+      .replace(/$/, "</p>");
+
+    // Create list item container
     const li = document.createElement("li");
     li.className = "list-group-item py-3";
     li.innerHTML = `
-      <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-        <div class="flex-grow-1">
-          <div class="fw-semibold">${esc(title)}</div>
-          ${preview ? `<div class="text-secondary small mt-1">${esc(preview)}</div>` : ""}
-          <div class="d-flex flex-wrap gap-2 mt-2">${chips.join("")}</div>
-          ${lo}
-          ${reviewHtml}
+      <div class="history-item-container">
+
+        <!-- Generated Output Section -->
+        <div class="p-3 mb-3 rounded" style="background: rgba(255,255,255,0.05);">
+          <div class="fw-semibold text-info mb-2">Generated Output:</div>
+          <div class="text-light" style="white-space: normal;">${answer}</div>
         </div>
 
-        <div class="text-end">
-          <div class="small text-muted mb-2">Model: ${esc(it.model || "—")} • ${esc(dateStr)}</div>
-          <div class="d-flex gap-2 justify-content-end">
-            ${it.id ? `<button class="btn btn-sm btn-outline-danger" data-del="${esc(it.id)}">
-              <i class="bi bi-trash3"></i>
-            </button>` : ""}
-          </div>
-        </div>
+        <!-- Meta Chips Section -->
+        <div class="d-flex flex-wrap gap-2 mb-2">${chips.join("")}</div>
+
+        <!-- Model and Date Section (now visible white text) -->
+        <div class="small" style="color: #ffffff;">Model: ${model} • ${dateStr}</div>
+
+        ${reviewHtml}
+
+        <!-- Delete Button -->
+        ${it.qaid ? `<button class="btn btn-sm btn-danger delete-btn-bottom-right" data-del="${esc(it.qaid)}" title="Delete this entry">
+          <i class="bi bi-trash3"></i> Delete
+        </button>` : ""}
       </div>
     `;
     els.list.appendChild(li);
   }
 }
+
 
 // ===== Page actions =====
 async function loadHistory() {
@@ -184,10 +208,8 @@ async function clearAll() {
   try {
     await apiDeleteAll(token);
   } catch (e) {
-    // If your backend doesn’t support DELETE /history yet, fail silently
     console.warn("DELETE /history not supported. Please implement on backend.", e);
   } finally {
-    // Re-fetch to reflect the change
     await loadHistory();
   }
 }
@@ -226,6 +248,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // Clear all button if present
   if (els.clearAllBtn) {
     els.clearAllBtn.addEventListener("click", clearAll);
+  }
+
+  // Add login check here
+  const token = localStorage.getItem("token");
+  const loginAlert = document.getElementById("loginAlert");
+  const card = document.querySelector(".card");
+
+  if (!token) {
+    if (loginAlert) loginAlert.classList.remove("d-none");
+    if (card) card.classList.add("d-none");
+    if (els.clearAllBtn) els.clearAllBtn.classList.add("d-none"); // hide button
+    if (els.footer) els.footer.classList.add("d-none");           // hide footer
+    return; // stop, don’t call loadHistory
+  } else {
+    if (loginAlert) loginAlert.classList.add("d-none");
+    if (card) card.classList.remove("d-none");
+    if (els.clearAllBtn) els.clearAllBtn.classList.remove("d-none"); // show button
+    if (els.footer) els.footer.classList.remove("d-none");           // show footer
   }
 
   // Initial load

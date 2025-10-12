@@ -68,4 +68,14 @@ window.addEventListener("DOMContentLoaded", () => {
   if (expanded) expanded.classList.add("d-none");
   if (icons) icons.classList.remove("d-none");
   if (main) main.style.marginLeft = "80px";
+
+  // ===== Hide Login/Signup when logged in =====
+  const token = localStorage.getItem("token");
+  const loginBtn = sidebar.querySelector('a[href="login.html"]');
+  const signupBtn = sidebar.querySelector('a[href="signup.html"]');
+
+  if (token) {
+    if (loginBtn) loginBtn.style.display = "none";
+    if (signupBtn) signupBtn.style.display = "none";
+  }
 });

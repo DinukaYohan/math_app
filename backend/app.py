@@ -17,6 +17,7 @@ from db import (
     list_distinct_countries, list_distinct_languages, list_distinct_grades,
     list_topics, list_objectives, combo_is_valid,
     set_review,delete_all_qa_for_user, 
+    delete_qa,
 )
 
 
@@ -250,6 +251,16 @@ def clear_history():
     uid = int(get_jwt_identity())
     n = delete_all_qa_for_user(uid)
     return ("", 204)
+
+@app.delete("/history/<qaid>")
+@jwt_required()
+def delete_history_item(qaid):
+    uid = int(get_jwt_identity())
+    deleted = delete_qa(qaid, uid)
+    if deleted == 0:
+        return jsonify({"error": "not found"}), 404
+    return ("", 204)
+
 
 
 
