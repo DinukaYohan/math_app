@@ -161,16 +161,35 @@ def generate(prompt: str, max_new_tokens: int = 512, *, api_key: Optional[str] =
 
     Returns:
         The model's text response.
-    """
+        """
     if not isinstance(prompt, str) or not prompt.strip():
         raise ValueError("prompt must be a non-empty string")
+
+    format_instructions = (
+        "Respond using the following structure exactly. Keep the section titles in bold markdown using double asterisks and end them with a colon:\n"
+        "**Math Word Problem:**\n"
+        "{one concise sentence describing the scenario}\n\n"
+        "**Question:**\n"
+        "{the single question that should be answered}\n\n"
+        "**Answer:**\n"
+        "{a short, correct answer that solves the problem}\n\n"
+        "**Learning Objective:**\n"
+        "{restate the learning objective from the prompt, or write 'Not specified.' if none is given}\n\n"
+        "**Culturally Appropriate Example:**\n"
+        "{one short sentence connecting the context to the region or culture mentioned; if none, write 'Not specified.'}\n"
+        "Do not add extra sections or commentary."
+    )
+
+    final_prompt = prompt.strip()
+    if "Math Word Problem:" not in final_prompt or "Answer:" not in final_prompt:
+        final_prompt = f"{final_prompt}\n\n{format_instructions}"
 
     genai = _load_sdk()
     _configure(genai, api_key)
     model = _build_model(genai, max_new_tokens)
 
     try:
-        resp = model.generate_content(prompt)
+        resp = model.generate_content(final_prompt)
     except Exception as e:
         # Surface a readable error; the Flask layer will convert to JSON.
         raise RuntimeError(f"Gemini generation failed: {e}") from e
@@ -189,7 +208,7 @@ def generate(prompt: str, max_new_tokens: int = 512, *, api_key: Optional[str] =
             bigger = 1024
         try:
             model2 = _build_model(genai, bigger)
-            resp2 = model2.generate_content(prompt)
+            resp2 = model2.generate_content(final_prompt)
             content2 = _candidate_text(resp2)
             if content2:
                 return content2
