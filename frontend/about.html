@@ -13,18 +13,42 @@
   <link rel="stylesheet" href="css/about.css" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="about-body">
+<body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark px-4">
-    <a href="index.html" class="navbar-brand fw-bold">Math App</a>
-    <div>
-      <a href="index.html" class="btn btn-outline-light me-2"><i class="bi bi-house-door"></i> Home</a>
-      <a href="login.html" class="btn btn-outline-light me-2">Login</a>
-      <a href="signup.html" class="btn btn-light text-dark">Sign Up</a>
-    </div>
-  </nav>
+  <!-- Left Sidebar -->
+<aside id="sidebar" class="sidebar">
+  <!-- Logo -->
+  <img src="logo/mathapp_logo.png" alt="Logo" class="logo-main"
+       onclick="toggleSidebar()"
+       onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" />
+  <div id="logoText" style="display:none; color:#fff; cursor:pointer; margin-bottom:20px;" onclick="toggleSidebar()">☰</div>
 
+  <hr class="sidebar-divider">
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar-menu">
+    <a href="index.html" class="btn">
+      <img src="logo/newchat_logo.png" class="sidebar-icon" />
+      <span class="label">New Chat</span>
+    </a>
+    <a href="history.html" class="btn">
+      <img src="logo/history_logo.png" class="sidebar-icon" />
+      <span class="label">History</span>
+    </a>
+    <a href="about.html" class="btn">
+      <img src="logo/about_logo.png" class="sidebar-icon" />
+      <span class="label">About</span>
+    </a>
+    <a href="login.html" class="btn no-icon">
+      <span class="label">Login</span>
+    </a>
+    <a href="signup.html" class="btn no-icon">
+      <span class="label">Sign Up</span>
+    </a>
+  </div>
+</aside>
+
+  
   <!-- Main Content -->
   <main class="main-wrap">
     <div class="container mt-5">
@@ -40,9 +64,9 @@
 
     <!-- Team -->
     <section aria-labelledby="team-heading">
-      <h2 id="team-heading" class="text-warning text-center mb-4">Our Team</h2>
+      <h2 id="team-heading" class="text-warning text-center mb-4">The Team</h2>
 
-      <!-- Row 1: Dinuka • Sunera • Benul -->
+      <!-- Row 1 -->
       <div class="row g-4 justify-content-center mb-3">
         <!-- Dinuka -->
         <div class="col-sm-6 col-md-4 col-lg-3">
@@ -86,7 +110,7 @@
           </div>
         </div>
 
-        <!-- Benul -->
+        <!-- Benul (UPDATED) -->
         <div class="col-sm-6 col-md-4 col-lg-3">
           <div class="card member-card h-100 text-center"
                tabindex="0"
@@ -108,24 +132,24 @@
         </div>
       </div>
 
-      <!-- Row 2: Vimukthi • Kavish -->
+      <!-- Row 2 -->
       <div class="row g-4 justify-content-center">
         <!-- Vimukthi -->
         <div class="col-sm-6 col-md-4 col-lg-3">
           <div class="card member-card h-100 text-center"
                tabindex="0"
                data-name="Vimukthi Wepitiyage"
-               data-role="Backend Developer"
+               data-role="Frontend Developer"
                data-details="
-               • Implemented backend services and API contracts.
-               • Ensured secure auth flows and token handling.
-               • Collaborated on request/response data models.">
+               • Built main UI (filters, topic dropdown, generate flow).
+               • Implemented forms and interactive components.
+               • Wired pages: home, history, login, signup, about.">
             <img src="pictures/Vimukthi.png" alt="Vimukthi Wepitiyage" class="card-img-top team-img mx-auto mt-3" />
             <div class="card-body">
               <h5 class="card-title mb-1">Vimukthi Wepitiyage</h5>
-              <p class="card-text text-secondary mb-2">Backend Developer</p>
+              <p class="card-text text-secondary mb-2">Frontend Developer</p>
               <p class="small text-light-50 mb-0">
-                Built backend services and maintained API contracts.
+                Built main frontend UI, forms, and feature integrations.
               </p>
             </div>
           </div>
@@ -136,17 +160,17 @@
           <div class="card member-card h-100 text-center"
                tabindex="0"
                data-name="Kavish Ratnayaka"
-               data-role="Backend Developer"
+               data-role="Frontend Developer"
                data-details="
-               • Added authentication endpoints and model routing.
-               • Improved error handling and logging.
-               • Helped with performance tuning and structure.">
+               • Designed responsive layout & authentication pages.
+               • Styled components and improved accessibility.
+               • Helped refine UX for mobile and desktop.">
             <img src="pictures/kavish.jpeg" alt="Kavish Ratnayaka" class="card-img-top team-img mx-auto mt-3" />
             <div class="card-body">
               <h5 class="card-title mb-1">Kavish Ratnayaka</h5>
-              <p class="card-text text-secondary mb-2">Backend Developer</p>
+              <p class="card-text text-secondary mb-2">Frontend Developer</p>
               <p class="small text-light-50 mb-0">
-                Implemented auth endpoints and model routing logic.
+                Designed responsive layout and authentication pages.
               </p>
             </div>
           </div>
@@ -195,8 +219,6 @@
   <!-- Scripts -->
   <script src="js/sidebar.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Logout visibility + action -->
-  <script src="js/logout.js"></script>
   <script>
     document.querySelectorAll('.member-card').forEach(card => {
       card.addEventListener('click', () => openMember(card));
