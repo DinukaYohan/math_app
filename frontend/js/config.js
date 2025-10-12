@@ -254,14 +254,14 @@ async function loadObjectives() {
   if (loHelp) loHelp.classList.toggle("d-none", !!(data.objectives && data.objectives.length));
 }
 
-// Wire events (avoid double reloads)
-
+// Wire events (avoid double reloads) ===
 window.addEventListener("DOMContentLoaded", () => {
   if (!document.getElementById("topic")) return;
 
+  // Load all base dropdowns first
   loadBootstrap().catch(console.warn);
 
-  // Country/Grade to refresh languages (and maybe topics if language preserved)
+  // Country/Grade to refresh languages
   document.getElementById("country")?.addEventListener("change", loadLanguages);
   document.getElementById("grade")?.addEventListener("change", loadLanguages);
 
@@ -270,4 +270,38 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Topic to refresh objectives
   document.getElementById("topic")?.addEventListener("change", loadObjectives);
+});
+
+
+// === Simple Qwen language warning ===
+window.addEventListener("DOMContentLoaded", () => {
+  const modelSelect = document.getElementById("model");
+  const languageSelect = document.getElementById("language");
+  const note = document.getElementById("langNote");
+
+  if (!modelSelect || !languageSelect || !note) return;
+
+  function checkQwenLanguageWarning() {
+    const model = modelSelect.value.trim().toLowerCase();
+    const lang = languageSelect.value.trim().toLowerCase();
+
+    // Show only if Qwen is selected AND user picked a non-English language (not blank)
+    if (model === "qwen" && lang && lang !== "english" && lang !== "-- select --") {
+      note.classList.remove("d-none");
+    } else {
+      note.classList.add("d-none");
+    }
+  }
+
+  // Run whenever model or language changes
+  modelSelect.addEventListener("change", checkQwenLanguageWarning);
+  languageSelect.addEventListener("change", checkQwenLanguageWarning);
+
+  // Also hide note when language dropdown resets due to country change
+  document.getElementById("country")?.addEventListener("change", () => {
+    note.classList.add("d-none");
+  });
+
+  // Run once on load
+  checkQwenLanguageWarning();
 });
