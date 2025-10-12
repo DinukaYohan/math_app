@@ -36,6 +36,28 @@ function refreshThumbs() {
   down?.classList.toggle("btn-outline-danger", reviewScore !== -1);
 }
 
+// === Custom modal alert (replaces browser alert) ===
+function showAlertDialog({ title = "Notice", message = "Something went wrong.", redirect = null }) {
+  const modalEl = document.getElementById("alertModal");
+  const modal = new bootstrap.Modal(modalEl);
+  const titleEl = document.getElementById("alertModalTitle");
+  const bodyEl = document.getElementById("alertModalBody");
+  const btnEl = modalEl.querySelector(".btn-primary");
+
+  titleEl.textContent = title;
+  bodyEl.textContent = message;
+
+  // Default button behavior
+  btnEl.textContent = redirect ? "Login" : "OK";
+  btnEl.onclick = () => {
+    modal.hide();
+    if (redirect) window.location.href = redirect;
+  };
+
+  modal.show();
+}
+
+
 function showReviewBox(show) {
   const box = document.getElementById("reviewBox");
   if (!box) return;
@@ -52,40 +74,73 @@ function showReviewBox(show) {
 }
 
 async function submitReview() {
-  if (!lastQaid) return;
+  if (!lastQaid) {
+    return showAlertDialog({
+      title: "No Question Found",
+      message: "Please generate a question before submitting a review."
+    });
+  }
+
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("Please log in first.");
-    location.href = "login.html";
+    showAlertDialog({
+      title: "Login Required",
+      message: "Please log in first to submit your review.",
+      redirect: "login.html"
+    });
     return;
   }
+
   const text = (document.getElementById("reviewText")?.value || "").trim();
   const body = {
     score: reviewScore === 1 ? "up" : reviewScore === -1 ? "down" : "",
     text
   };
   const status = document.getElementById("reviewStatus");
+
   try {
     document.getElementById("saveReviewBtn").disabled = true;
     status.textContent = "Saving...";
     await apiRequest(`/qa/${encodeURIComponent(lastQaid)}/review`, { method: "POST", body, auth: true });
+
     status.textContent = "Saved!";
+    showAlertDialog({
+      title: "Review Saved",
+      message: "Your review has been successfully submitted."
+    });
   } catch (e) {
     console.error(e);
     status.textContent = "Failed to save.";
+    showAlertDialog({
+      title: "Error",
+      message: "Failed to save your review. Please try again later."
+    });
   } finally {
     document.getElementById("saveReviewBtn").disabled = false;
   }
 }
 
 function clearReviewDraft() {
+  // Reset thumbs (reviewScore)
   reviewScore = null;
   refreshThumbs();
-  const t = document.getElementById("reviewText");
-  if (t) t.value = "";
-  const s = document.getElementById("reviewStatus");
-  if (s) s.textContent = "";
+
+  // Clear review text
+  const textEl = document.getElementById("reviewText");
+  if (textEl) textEl.value = "";
+
+  // Clear status label
+  const statusEl = document.getElementById("reviewStatus");
+  if (statusEl) statusEl.textContent = "";
+
+  // Show confirmation modal
+  showAlertDialog({
+    title: "Cleared",
+    message: "Your review draft has been cleared."
+  });
 }
+
+
 
 // === EXISTING ===
 async function onGenerateClick(e) {
@@ -94,8 +149,11 @@ async function onGenerateClick(e) {
 
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("Please log in first.");
-    location.href = "login.html";
+    showAlertDialog({
+      title: "Login Required",
+      message: "Please log in first to generate questions."
+    });
+    setTimeout(() => location.href = "login.html", 2500); // timeout to redirect to login page 
     return;
   }
 
@@ -108,11 +166,17 @@ async function onGenerateClick(e) {
     learning_objective: getVal("learningObjective"),
   };
 
-  if (!body.country)  return alert("Please select a country.");
-  if (!body.language) return alert("Please select a language.");
-  if (!body.grade)    return alert("Please select a grade.");
-  if (!body.topic)    return alert("Please select a topic.");
-  if (!body.learning_objective) return alert("Please select a learning objective.");
+  if (!body.country)
+    return showAlertDialog({ title: "Missing Selection", message: "Please select a country." });
+  if (!body.language)
+    return showAlertDialog({ title: "Missing Selection", message: "Please select a language." });
+  if (!body.grade)
+    return showAlertDialog({ title: "Missing Selection", message: "Please select a grade." });
+  if (!body.topic)
+    return showAlertDialog({ title: "Missing Selection", message: "Please select a topic." });
+  if (!body.learning_objective)
+    return showAlertDialog({ title: "Missing Selection", message: "Please select a learning objective." });
+
 
   const btn = document.getElementById("generateBtn");
   const out = document.getElementById("responseText");

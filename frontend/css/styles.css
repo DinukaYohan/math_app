@@ -198,3 +198,45 @@ body {
 #outputBox strong {
   color: #004b91;
 }
+
+/* === Review Buttons Styling === */
+
+/* Save Review Button (modern blue accent) */
+#saveReviewBtn {
+  background-color: #00d9ff !important;
+  color: #032c3d !important;
+  border: none !important;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+
+#saveReviewBtn:hover {
+  background-color: #00b8e6 !important;
+  color: #fff !important;
+  transform: scale(1.04);
+}
+
+/* Clear Button (cyan outline “ghost” style) */
+#clearReviewBtn {
+  color: #00d9ff !important;
+  border: 1px solid rgba(0, 217, 255, 0.6) !important;
+  background: transparent !important;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none !important;
+  font-weight: 500;
+}
+
+#clearReviewBtn:hover {
+  background-color: rgba(0, 217, 255, 0.15) !important;
+  color: #ffffff !important;
+  border-color: rgba(0, 217, 255, 0.8) !important;
+  transform: scale(1.05);
+}
+
+/* Optional glowing hover (for extra polish) */
+#clearReviewBtn:hover, #saveReviewBtn:hover {
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.5);
+}
