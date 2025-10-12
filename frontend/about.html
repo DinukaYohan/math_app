@@ -52,19 +52,36 @@
   <!-- Main Content -->
   <main class="main-wrap">
     <div class="container mt-5">
-    <header class="text-center">
-      <h1 class="fw-bold mb-3">About Our Project</h1>
-      <p class="lead text-light">
-        The Math App helps students and teachers generate curriculum-aware math questions by grade, language,
-        country, topic, and model. Our aim is to make practice fast, consistent, and accessible.
-      </p>
-    </header>
+      <header class="about-header mt-5">
+        <!-- Left: Logo -->
+        <div class="about-logo-wrap">
+          <img src="logo/mathapp_logo.png" alt="MathAI Logo" class="about-logo" />
+        </div>
+
+        <!-- Right: Text -->
+        <div class="about-text">
+          <h1 class="fw-bold mb-3">About Our Project</h1>
+          <p class="lead text-light mb-0">
+            MathAI helps students and teachers generate curriculum-aware math questions by grade, language,
+            country, topic, and model. Our aim is to make practice fast, consistent, and accessible.
+            <br><br>
+            Built with precision and adaptability, MathAI ensures that every question generated aligns with
+            real-world education standards. The system empowers teachers to save time on manual preparation,
+            while giving students unlimited access to customized exercises suited to their curriculum and
+            progress level.
+            <br><br>
+            The project blends advanced AI models with user-friendly design to make learning mathematics
+            interactive and engaging — bridging the gap between technology and classroom learning.
+          </p>
+        </div>
+      </header>
+
 
     <hr class="divider my-5">
 
     <!-- Team -->
     <section aria-labelledby="team-heading">
-      <h2 id="team-heading" class="text-warning text-center mb-4">The Team</h2>
+      <h2 id="team-heading" class="text-warning text-center mb-4">THE TEAM</h2>
 
       <!-- Row 1 -->
       <div class="row g-4 justify-content-center mb-3">
@@ -162,12 +179,12 @@
                data-name="Kavish Ratnayaka"
                data-role="Frontend Developer"
                data-details="
-               • Designed responsive layout & authentication pages.
-               • Styled components and improved accessibility.
-               • Helped refine UX for mobile and desktop.">
-            <img src="pictures/kavish.jpeg" alt="Kavish Ratnayaka" class="card-img-top team-img mx-auto mt-3" />
+               • Designed the overall structure and UI concept for the app.
+               • Built and styled the collapsible sidebar with animations and responsive layout.
+               • Enhanced the UI with custom CSS/Bootstrap for clean design and smooth transitions.">
+            <img src="pictures/kavish.jpg" alt="Kavish Rathnayake" class="card-img-top team-img mx-auto mt-3" />
             <div class="card-body">
-              <h5 class="card-title mb-1">Kavish Ratnayaka</h5>
+              <h5 class="card-title mb-1">Kavish Rathnayake</h5>
               <p class="card-text text-secondary mb-2">Frontend Developer</p>
               <p class="small text-light-50 mb-0">
                 Designed responsive layout and authentication pages.
@@ -183,19 +200,19 @@
     <!-- Tech -->
     <section class="text-center" aria-labelledby="tech-heading">
       <h3 id="tech-heading" class="text-info mb-3">Technologies Used</h3>
-      <p class="text-light mb-1"><b>Frontend:</b> HTML, CSS, Bootstrap, JavaScript</p>
+      <p class="text-light mb-1"><b>Frontend:</b> HTML, CSS, Bootstrap, JavaScript & NodeJS</p>
       <p class="text-light mb-1"><b>Backend:</b> Python (Flask)</p>
-      <p class="text-light mb-1"><b>Database:</b> MySQL</p>
+      <p class="text-light mb-1"><b>Database:</b> SQLite</p>
       <p class="text-light"><b>Version Control:</b> Git & GitHub</p>
       <a class="btn btn-outline-light mt-2" href="index.html">
         <i class="bi bi-magic"></i> Start Generating
       </a>
     </section>
-  </main>
 
-  <footer class="text-center text-light py-4 mt-5">
-    © 2025 Math App · All Rights Reserved
-  </footer>
+    <footer class="text-center text-light py-4 mt-5">
+       MathAI © 2025 · All Rights Reserved
+    </footer>
+  </main>
 
   <!-- Member Details Modal -->
   <div class="modal fade" id="memberModal" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
