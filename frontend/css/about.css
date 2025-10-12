@@ -12,6 +12,58 @@ body {
   line-height: 1.6;
 }
 
+/* About header layout (side-by-side logo + text) */
+.about-header {
+  display: flex;
+  align-items: center;          /* vertically center logo and text */
+  justify-content: center;      /* horizontally center the whole section */
+  flex-wrap: nowrap;            /* stay side by side on wide screens */
+  gap: 10px;
+  max-width: 1000px;
+  margin: 100px auto;
+  text-align: left;
+}
+
+/* Logo wrapper to keep it fixed size */
+.about-logo-wrap {
+  flex: 0 0 auto;
+}
+
+.about-logo {
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(0, 217, 255, 0.4));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.about-logo:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 12px rgba(0, 217, 255, 0.6));
+}
+
+/* Text on the right */
+.about-text {
+  max-width: 600px;
+  color: #fff;
+}
+
+/* Responsive: stack vertically on mobile */
+@media (max-width: 992px) {
+  .about-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .about-text {
+    text-align: center;
+  }
+  .about-logo {
+    width: 130px;
+    height: 130px;
+  }
+}
+
+
 /* Optional container if you use it elsewhere */
 .about-container {
   max-width: 1000px;
@@ -91,7 +143,7 @@ body {
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.38);
 }
 
-/* Circular profile photos (support all names you've used) */
+/* Circular profile photos  */
 .team-img,
 .team-photo,
 .card-img-top {
