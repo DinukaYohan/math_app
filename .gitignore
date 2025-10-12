@@ -12,6 +12,7 @@ backend/app.db
 backend/.env
 
 # Node modules
-/frontend-server/node_modules/
-/frontend/node_modules/
-/frontend-server/.env
+frontend/frontend-server/node_modules/
+frontend/node_modules/
+node_modules/
+node_modules
