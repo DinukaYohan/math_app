@@ -10,8 +10,8 @@ except Exception:
         return "OpenAI backend not configured."
 
 def generate(prompt: str, model_key: Optional[str], max_new_tokens: int = 256) -> str:
-    mk = (model_key or "qwen").lower()
-    if mk in ("openai", "gpt", "chatgpt"):
+    mk = (model_key or "openai").lower().strip()
+    if mk in ("openai", "gpt", "chatgpt") or mk.startswith("gpt-"):
         return openai_generate(prompt, max_new_tokens=max_new_tokens)
     if mk == "qwen":
         return qwen_generate(prompt, max_new_tokens=max_new_tokens)
