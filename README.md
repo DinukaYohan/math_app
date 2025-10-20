@@ -14,9 +14,9 @@ The Math App helps students and teachers generate curriculum-aware math question
 ## Team & Roles
 
 - **Dinuka Yohan** &mdash; Backend Developer  
-  Implemented Flask endpoints, validation logic, and question generation workflow.
+  Implemented Flask endpoints, authentication logic, question generation workflow and Qwen LLM.
 - **Sunera Hewage** &mdash; Backend Developer  
-  Built REST APIs, middleware, and server-side integrations.
+  Integrated Gemini LLM.
 - **Benul Santhush** &mdash; Database & Model Integration  
   Designed the SQLite schema, Excel importer, and OpenAI ChatGPT adapter.
 - **Vimukthi Wepitiyage** &mdash; Frontend Developer  
