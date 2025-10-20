@@ -1,5 +1,4 @@
-<img width="512" height="740" alt="mathapp_logo" src="https://github.com/user-attachments/assets/d134df16-e4c8-453f-8f12-3685a8690186" />
-# Math App
+## MathAI
 
 **Course:** 159333 Programming Project &mdash; Dr. Surangika Ranathunga  
 **Mission:** Help teachers and students generate curriculum-aware math word problems that respect the selected grade, country, language, topic, and preferred LLM.
